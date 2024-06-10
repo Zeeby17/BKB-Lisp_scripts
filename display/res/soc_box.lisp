@@ -3,7 +3,7 @@
 ; soc -> state of charge, float
 ; min -> min batt level for alarm, when it's below that value the drawing turns red
 ; porc_volt -> 1 porcentage 0 volts
-; max -> how many volts are the max, if percentage is displayd this parameter is 100
+; max -> how many volts are the max, if percentage is displayed this parameter is 100
 ; min -> px py position, pixel
 
 (defun m-trunc (v min max)
@@ -17,22 +17,48 @@
 (/ (* (- x in_min) (- out_max out_min)) (+ (- in_max in_min) out_min))
 )
 
+(def bar_val 0)
+(def bar_val_aux 0)
+(def prescaler 0)
+
 (defun bat_soc (soc min max porc_volt rem_sk px py){
-    
-    (def bar_val 0)
-    (setq soc (m-trunc soc min max)) 
-    (setq bar_val (utils_map soc min max 1 39))
+    (def soc_aux 0)
+    (setq soc (m-trunc soc min max))
+    (setq soc_aux (* soc 10))
+    (setq prescaler (+ prescaler 1))
+
+    (if(and (and (= rem_sk 1) (= porc_volt 0)) (= (isCharging) 0))
+        (setq bar_val (utils_map (* soc 10) (* min 10) (* max 10) 1 39))
+        (setq bar_val (utils_map soc min max 1 39))
+    )
+
     (def bar_col 0)
     (setq bar_col (utils_map soc min max 1 15))
     (setq bar_col (m-trunc bar_col 1 16)) 
     (def bat_box (img-buffer 'indexed16 40 16))
     (img-rectangle bat_box 0 0 39  14 15)
+
+    (if(and (= rem_sk 1) (= (isCharging) 1)){; charging indicator
+        (setq bar_val_aux (+ bar_val_aux 1))
+        (if (> bar_val_aux 39)
+            (setq bar_val_aux 0)
+        )
+        (setq bar_val bar_val_aux)
+        (setq bar_col 12)    ; put it full green
+    })
+
     (img-rectangle bat_box 2 2 bar_val 11 bar_col '(filled))
     (img-line bat_box 39 14 39 14 15)     ; missing point in the rectangle
     (img-line bat_box 38 1 38 12 0)       ; prevent map error
     (if (= porc_volt 1)
          (txt-block-c bat_box 14 20 8 font_9x14 (str-from-n soc "%d%%"))
-         (txt-block-c bat_box 14 20 8 font_9x14 (str-from-n soc "%d%V"))
+         (progn
+             (if(and (= rem_sk 1))
+                (txt-block-c bat_box 14 20 8 font_9x14 (str-from-n soc "%.1fV"))
+                (txt-block-c bat_box 14 20 8 font_9x14 (str-from-n soc "%dV"))
+             )
+         )
+
     )
     (disp-render bat_box px py '(0 0xFF0000 0xFF6000 0xFFFF00 0xE0FF00 0xD9FF00 0xBAFF00 0x9BFF00 0x70FF00 0x7CFF00 0x5DFF00 0x3EFF00  0x1FFF00 0x00FF00 0x0000FF 0xFFFFFF))
 

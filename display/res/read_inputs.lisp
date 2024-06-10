@@ -1,4 +1,5 @@
 (define on_button 10)
+(define charger_pin 4)
 
 (def on_pressed_short 0)
 (def on_pressed_long 0)
@@ -17,11 +18,9 @@
     (if(= (gpio-read on_button) 1) {
         (setq secs (secs-since last_update))
         (if(and (>= secs button_time_short ) (<= secs (+ button_time_short 0.1))) {
-            (print "short on")
             (setq on_pressed_short 1)  
         })
         (if(and (>= secs button_time_long ) (< secs (+ button_time_long 0.1))) {
-            (print "long on")
             (setq on_pressed_long 1)  
         })
     }
@@ -56,11 +55,9 @@
     (if(= (read_analog_button) 2) {
         (setq secs_cfg (secs-since last_update_cfg))
         (if(and (>= secs_cfg button_time_short ) (<= secs_cfg (+ button_time_short 0.1))) {
-            (print "cfg short")
             (setq cfg_pressed_short 1)  
         })
         (if(and (>= secs_cfg button_time_long ) (< secs_cfg (+ button_time_long 0.1))) {
-            (print "cfg long")
             (setq cfg_pressed_long 1)  
         })
     }
@@ -79,11 +76,9 @@
     (if(= (read_analog_button) 1) {
         (setq secs_thum (secs-since last_update_thum))
         (if(and (>= secs_thum button_time_short ) (<= secs_thum (+ button_time_short 0.1))) {
-            (print "thum short")
             (setq thum_pressed_short 1)  
         })
         (if(and (>= secs_thum button_time_long ) (< secs_thum (+ button_time_long 0.1))) {
-            (print "thum long")
             (setq thum_pressed_long 1)  
         })
     }
@@ -92,4 +87,16 @@
         (setq thum_pressed_short 0)
         (setq thum_pressed_long 0)
     })           
+})
+
+(defun read_SOC(){
+    (/ (get-adc 3) 0.4) ; TODO implement low pass filter
+})
+
+(def charging)
+(defun isCharging(){
+   (if(= (gpio-read 4) 1)
+        (setq charging 0)
+        (setq charging 1)
+    )
 })

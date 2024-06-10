@@ -1,3 +1,5 @@
+(define x_offset 2)
+(define y_offset 67)
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
 
@@ -14,7 +16,7 @@
 (import "res/trip_box.lisp" 'trip_box)
 (import "screens/calib_screen.lisp" 'calib_screen)
 (import "res/clear.lisp" 'clear)
-
+(import "res/read_inputs.lisp" 'read_inputs)
 (read-eval-program disp-text)
 (read-eval-program speed_box)
 (read-eval-program soc_box)
@@ -25,11 +27,12 @@
 (read-eval-program trip_box)
 (read-eval-program calib_screen)
 (read-eval-program clear)
+(read-eval-program read_inputs)
 
 (disp-load-st7735 6 5 8 7 9 30) ; for some reason the first attempt to init is not succesful
 (disp-load-st7735 6 5 8 7 9 30)
 (disp-reset)
-(ext-disp-orientation 0)
+(ext-disp-orientation 2)
 
 
 ; drawing limit
