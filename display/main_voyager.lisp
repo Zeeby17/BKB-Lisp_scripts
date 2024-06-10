@@ -45,13 +45,14 @@
 (read-eval-program remote_screen)
 ; display initialization
 (display_init)
-
+(def direction 1)
 (def menu_index 0)
+(def main_prescaler 0)
 
 ; display thread
 (defun display_th(){
     (loopwhile t {
-
+        (setq main_prescaler (+ main_prescaler 1))
         (cond
         ((eq menu_index 0) (draw_main_screen))
         ((eq menu_index 1) (config_screen))
@@ -66,6 +67,22 @@
         (if (= on_pressed_long 1){
             (off_sequence)                             
         })
+
+        ; change direction
+        (if (> main_prescaler 10){
+            (if (and (= cfg_pressed_short 1) (< (get-adc-raw) (+ (eeprom-read-i min_cal_add) 20))){
+                (if(= direction 1)
+                    (setq direction 0)
+                    (setq direction 1)
+                )
+            })
+
+        })
+
+        (if (> main_prescaler 10)
+            (setq main_prescaler 0)
+        )
+
         (sleep 0.03)
     })
 })

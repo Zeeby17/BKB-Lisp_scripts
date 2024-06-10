@@ -13,6 +13,10 @@
 (define button_time_short 0.15) 
 (define button_time_long 2.0) 
 
+(defun get-adc-raw() {
+   (* (get-adc 0) 1241.21 )
+})
+
 (defun read_on(){
 
     (if(= (gpio-read on_button) 1) {
