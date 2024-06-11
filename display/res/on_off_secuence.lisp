@@ -3,7 +3,7 @@
 (def input_on)
 (define on_butt 10)
 (define latch_pin 20)
-
+@const-start
 (defun off_sequence(){
     
     (gpio-write latch_pin 0)
@@ -37,3 +37,4 @@
     (sleep 2)
       
 })
+@const-end

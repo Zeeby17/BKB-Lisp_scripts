@@ -24,16 +24,11 @@
 
 
 (def thum_stick_adc 2048)
-(defun get-adc-raw() {
-   (* (get-adc 0) 1241.21 )   
-})
-
 (def thum_min 4096)
 (def thum_mid 0)
 (def thum_max 0)
 (def exit 1)
 (def aux_adc 0)
-(def save_counter 0)
 (def firts_iteration_cal 0)
 
 (defun calib_screen (){
@@ -82,17 +77,14 @@
      
      (if (= on_pressed_short 1){
         (setq on_pressed_short 0) 
-        (clear_screen)
+        (disp-clear)
         (setq firts_iteration 0)
         (setq menu_sub_index 0)
         (setq enter_menu 0)
         (setq firts_iteration_cal 0)
-        (print (eeprom-read-i min_cal_add))
-        (print (eeprom-read-i mid_cal_add))    
-        (print (eeprom-read-i max_cal_add))
         (setq thum_min 4096)  
         (setq thum_mid 0)  
-        (setq thum_max 0)        
+        (setq thum_max 0)
      })       
     
      (if (= cfg_pressed_long 1){
@@ -101,7 +93,7 @@
         (eeprom-store-i min_cal_add thum_min)    
         (eeprom-store-i mid_cal_add thum_mid)  
         (eeprom-store-i max_cal_add thum_max)  
-        (clear_screen)
+        (disp-clear)
         (setq firts_iteration 0)
         (setq menu_sub_index 0)
         (setq enter_menu 0)

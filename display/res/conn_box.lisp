@@ -1,4 +1,4 @@
-
+@const-start
 (defun write_online (online px py){
 
     (def conn_box (img-buffer 'indexed4 30 14))
@@ -33,3 +33,4 @@
     (disp-render conn_box px py '(0 0xFF9000 0xC0FF00 0x0000FF))
 
 })
+@const-end

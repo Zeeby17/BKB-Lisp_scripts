@@ -12,7 +12,7 @@
 (def last_update 0.0)
 (define button_time_short 0.15) 
 (define button_time_long 2.0) 
-
+@const-start
 (defun get-adc-raw() {
    (* (get-adc 0) 1241.21 )
 })
@@ -34,9 +34,12 @@
         (setq on_pressed_long 0)
     })   
 })
+@const-end
 
 (def analog_button 0.0)
 (def return_analog 0)
+
+@const-start
 (defun read_analog_button(){
     (setq analog_button (get-adc 2))
     (if(> analog_button 1.85)
@@ -50,10 +53,11 @@
         )
     )
 })
+@const-end
 
 (def last_update_cfg 0)
 (def secs_cfg 0)
-
+@const-start
 (defun read_cfg(){
     
     (if(= (read_analog_button) 2) {
@@ -71,10 +75,10 @@
         (setq cfg_pressed_long 0)
     })               
 })
-
+@const-end
 (def last_update_thum 0)
 (def secs_thum 0)
-
+@const-start
 (defun read_thum(){
 
     (if(= (read_analog_button) 1) {
@@ -96,11 +100,14 @@
 (defun read_SOC(){
     (/ (get-adc 3) 0.4) ; TODO implement low pass filter
 })
-
+@const-end
 (def charging)
+
+@const-start
 (defun isCharging(){
    (if(= (gpio-read 4) 1)
         (setq charging 0)
         (setq charging 1)
     )
 })
+@const-end

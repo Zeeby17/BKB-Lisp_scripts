@@ -4,9 +4,10 @@
 (def thum_stick_prescaler 0)
 (define menu_count 3)
 
+@const-start
 (defun config_screen(){
     (if (= firts_iteration 0){
-        (clear_screen)
+        (disp-clear)
         (def title_box (img-buffer 'indexed2 128 30))
         (def text_box (img-buffer 'indexed2 45 14))
         (txt-block-l text_box 1 0 0  font_9x14 "EXIT")
@@ -32,7 +33,7 @@
                     (if (= cfg_pressed_short 1){
                         (setq cfg_pressed_short 0)
                         (setq cfg_pressed_long 0)
-                        (clear_screen)
+                        (disp-clear)
                         (setq enter_menu 1)                       
                     })            
                 }
@@ -50,7 +51,7 @@
                 (if (= cfg_pressed_short 1){
                     (setq cfg_pressed_short 0)
                     (setq cfg_pressed_long 0)
-                    (clear_screen)
+                    (disp-clear)
                     (setq enter_menu 1)                       
                  })            
              }
@@ -68,7 +69,7 @@
                 (if (= cfg_pressed_short 1){
                     (setq cfg_pressed_short 0)
                     (setq cfg_pressed_long 0)
-                    (clear_screen)
+                    (disp-clear)
                     (setq enter_menu 1)                       
                  })            
              }
@@ -85,7 +86,7 @@
                 (if (= cfg_pressed_short 1){
                     (setq cfg_pressed_short 0)
                     (setq cfg_pressed_long 0)
-                    (clear_screen)
+                    (disp-clear)
                     (setq enter_menu 1)                       
                  })            
              }
@@ -115,9 +116,10 @@
     
     (if (= on_pressed_short 1){
         (setq on_pressed_short 0) 
-        (clear_screen)
+        (disp-clear)
         (setq firts_iteration 0)
         (setq menu_sub_index 0)
-        (setq menu_index 0)                   
+        (setq menu_index 0)
     }) 
 })
+@const-end

@@ -1,4 +1,4 @@
-
+@const-start
 (defun write_direction (dir px py){
 
     (def dir_box (img-buffer 'indexed4 24 16))
@@ -15,3 +15,4 @@
     (disp-render dir_box px py '(0 0xFF0000 0x00FF00 0x0000FF))
 
 })
+@const-end

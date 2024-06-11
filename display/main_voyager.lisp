@@ -17,7 +17,6 @@
 (import "res/amps_box.lisp" 'amps_box)
 (import "res/trip_box.lisp" 'trip_box)
 (import "screens/calib_screen.lisp" 'calib_screen)
-(import "res/clear.lisp" 'clear)
 (import "res/on_off_secuence.lisp" 'on_off_secuence)
 (import "res/read_inputs.lisp" 'read_inputs)
 (import "screens/main_screen.lisp" 'main_screen)
@@ -35,7 +34,6 @@
 (read-eval-program amps_box)
 (read-eval-program trip_box)
 (read-eval-program calib_screen)
-(read-eval-program clear)
 (read-eval-program on_off_secuence)
 (read-eval-program read_inputs)
 (read-eval-program main_screen)
@@ -97,12 +95,6 @@
     })
 })
 
-(defun read_esc_th(){
-        
-        
-})
-
 ; spawn threads
 (spawn 100 display_th)
 (spawn 50 inputs_th)
-(spawn 50 read_esc_th)

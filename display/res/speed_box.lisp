@@ -4,7 +4,7 @@
 ; px py  -> position in pixels
 ; color  -> 0 = black, 1 = white, 2 = reed, 3 = green
 
-
+@const-start
 (defun write-speed (speed m_k px py color){
 
     (def speed_box (img-buffer 'indexed4 60 30))
@@ -20,3 +20,4 @@
     (disp-render unit_box (+ px 63) (+ py 15) '(0x00000 0xFFFFFF))
 
 })
+@const-end

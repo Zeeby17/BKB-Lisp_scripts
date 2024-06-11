@@ -1,3 +1,4 @@
+@const-start
 (defun write_mode (mode px py){
 
     (def mode_box (img-buffer 'indexed16 28 26))
@@ -28,3 +29,4 @@
     (disp-render mode_box px py '(0 0x00FF00 0xFFFF00  0xFFA000 0xFF0000))
 
 })
+@const-end

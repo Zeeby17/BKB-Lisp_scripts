@@ -1,5 +1,5 @@
 ;TODO move def to a file
-
+@const-symbol-strings
 (def M_POLES 6)
 (def PULLEY 3.5)
 (def W_DIAMETER 7.5)
@@ -8,9 +8,10 @@
 (def firts_iteration_esk 0)
 (def esk8_screen_num 0)
 
+@const-start
 (defun esk8_screen(){
     (if (= firts_iteration_esk 0){
-        (clear_screen)
+        (disp-clear)
         (def text_box (img-buffer 'indexed2 128 14))
         (def text_box_2 (img-buffer 'indexed2 40 14))
         (txt-block-l text_box 1 0 0  font_9x14 "EXIT      NEXT")
@@ -89,11 +90,12 @@
     
     (if (= on_pressed_short 1){
         (setq on_pressed_short 0) 
-        (clear_screen)
+        (disp-clear)
         (setq firts_iteration 0)
         (setq menu_sub_index 0)
         (setq enter_menu 0)
         (setq firts_iteration_esk 0)
-        (setq esk8_screen_num 0)       
+        (setq esk8_screen_num 0)
      })   
 })
+@const-end

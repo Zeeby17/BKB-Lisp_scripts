@@ -1,11 +1,21 @@
 ;TODO read firmware and hardware version fron skate and remote
 (def firts_iteration_info 0)
 (def info_screen_num 0)
+(def rem_fw 6.05)
+(def rem_hw 1.0)
+(def rec_fw 6.05)
+(def rec_hw 1.0)
+(def rec_lisp 1.0)
+(def sk_fw 6.05)
+(def sk_hw 1.0)
+(def sk_lisp 1.0)
 
+@const-start
 (defun info_screen(){
     (if (= firts_iteration_info 0){
-        (clear_screen)
+        (disp-clear)
         (def text_box (img-buffer 'indexed2 60 14))
+
         (txt-block-l text_box 1 0 0  font_9x14 "EXIT")
         (disp-render text_box (+ x_offset 0) (+ y_offset 53) '(0 0xFFFFFF))
         (img-clear text_box)
@@ -30,18 +40,18 @@
         (setq firts_iteration_info 1)
            
     })
-    
+
     (cond
         ((eq info_screen_num 0) (progn
             (txt-block-l text_box 1 0 0  font_9x14 "Remote")
             (disp-render text_box (+ x_offset 1) (+ y_offset -1) '(0 0xFFFFFF))
             (img-clear text_box)
-            
-            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n 6.05 "%.2f")) ; firmware version
+
+            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n rem_fw "%.2f")) ; firmware version
             (disp-render numb_box (+ x_offset 77) (+ y_offset 12) '(0 0xFFFFFF))
             (img-clear numb_box)
             
-            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n 1.0 "%.2f")) ; hardware version
+            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n rem_hw "%.2f")) ; hardware version
             (disp-render numb_box (+ x_offset 77) (+ y_offset 25) '(0 0xFFFFFF))
             (img-clear numb_box)
             
@@ -49,25 +59,23 @@
             (disp-render numb_box (+ x_offset 77) (+ y_offset 38) '(0 0xFFFFFF))
             (img-clear numb_box)
         
-        
         ))
         ((eq info_screen_num 1) (progn
             (txt-block-l text_box 1 0 0  font_9x14 "Receiver")
             (disp-render text_box (+ x_offset 1) (+ y_offset -1) '(0 0xFFFFFF))
             (img-clear text_box)
             
-            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n 6.15 "%.2f")) ; firmware version
+            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n rec_fw "%.2f")) ; firmware version
             (disp-render numb_box (+ x_offset 77) (+ y_offset 12) '(0 0xFFFFFF))
             (img-clear numb_box)
             
-            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n 1.1 "%.2f")) ; hardware version
+            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n rem_hw "%.2f")) ; hardware version
             (disp-render numb_box (+ x_offset 77) (+ y_offset 25) '(0 0xFFFFFF))
             (img-clear numb_box)
             
-            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n 1.1 "%.2f")) ; lisp version
+            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n rec_lisp "%.2f")) ; lisp version
             (disp-render numb_box (+ x_offset 77) (+ y_offset 38) '(0 0xFFFFFF))
             (img-clear numb_box)
-        
         
         ))
         ((eq info_screen_num 2) (progn
@@ -75,21 +83,21 @@
             (disp-render text_box (+ x_offset 1) (+ y_offset -1) '(0 0xFFFFFF))
             (img-clear text_box)
             
-            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n 1.2 "%.2f")) ; hardware version
+            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n sk_fw "%.2f")) ; hardware version
             (disp-render numb_box (+ x_offset 77) (+ y_offset 12) '(0 0xFFFFFF))
             (img-clear numb_box)
             
-            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n 6.25 "%.2f")) ; firmware version
+            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n sk_hw "%.2f")) ; firmware version
             (disp-render numb_box (+ x_offset 77) (+ y_offset 25) '(0 0xFFFFFF))
             (img-clear numb_box)
             
-            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n 1.2 "%.2f")) ; lisp version
+            (txt-block-l numb_box 1 0 0  font_9x14 (str-from-n sk_lisp "%.2f")) ; lisp version
             (disp-render numb_box (+ x_offset 77) (+ y_offset 38) '(0 0xFFFFFF))
             (img-clear numb_box)
 
         ))
     )
-    
+
     (if (= cfg_pressed_short 1){
         (setq cfg_pressed_short 0)
         (setq info_screen_num (+ info_screen_num 1))
@@ -100,7 +108,7 @@
     
     (if (= on_pressed_short 1){
         (setq on_pressed_short 0) 
-        (clear_screen)
+        (disp-clear)
         (setq firts_iteration 0)
         (setq menu_sub_index 0)
         (setq enter_menu 0)
@@ -108,3 +116,4 @@
         (setq info_screen_num 0)       
      })   
 })
+@const-end

@@ -5,7 +5,7 @@
 ; porc_volt -> 1 porcentage 0 volts
 ; max -> how many volts are the max, if percentage is displayed this parameter is 100
 ; min -> px py position, pixel
-
+@const-start
 (defun m-trunc (v min max)
     (cond
         ((< v  min) min)
@@ -16,11 +16,11 @@
 (defun utils_map(x in_min in_max out_min out_max)
 (/ (* (- x in_min) (- out_max out_min)) (+ (- in_max in_min) out_min))
 )
-
+@const-end
 (def bar_val 0)
 (def bar_val_aux 0)
 (def prescaler 0)
-
+@const-start
 (defun bat_soc (soc min max porc_volt rem_sk px py){
     (def soc_aux 0)
     (setq soc (m-trunc soc min max))
@@ -81,4 +81,4 @@
     )
         
 })
-
+@const-end

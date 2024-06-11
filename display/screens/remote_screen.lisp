@@ -5,9 +5,10 @@
 (def firts_iteration_remote 0)
 (def remote_screen_num 0)
 
+@const-start
 (defun remote_screen(){
     (if (= firts_iteration_remote 0){
-        (clear_screen)
+        (disp-clear)
         (def text_box (img-buffer 'indexed2 128 14))
         (txt-block-l text_box 1 0 0  font_9x14 "EXIT      NEXT")
         (disp-render text_box (+ x_offset 0) (+ y_offset 53) '(0 0xFFFFFF))
@@ -57,7 +58,7 @@
     
     (if (= on_pressed_short 1){
         (setq on_pressed_short 0) 
-        (clear_screen)
+        (disp-clear)
         (setq firts_iteration 0)
         (setq menu_sub_index 0)
         (setq enter_menu 0)
@@ -65,3 +66,4 @@
         (setq remote_screen_num 0)       
      })   
 })
+@const-start
