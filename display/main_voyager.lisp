@@ -26,6 +26,7 @@
 (import "screens/remote_screen.lisp" 'remote_screen)
 (import "res/eeprom_init.lisp" 'eeprom_init)
 (import "res/throttle.lisp" 'throttle)
+(import "res/esp_now.lisp" 'esp_now)
 (read-eval-program disp-text)
 (read-eval-program speed_box)
 (read-eval-program display_init)
@@ -45,6 +46,7 @@
 (read-eval-program remote_screen)
 (read-eval-program eeprom_init)
 (read-eval-program throttle)
+(read-eval-program esp_now)
 
 ; display initialization
 (display_init)
@@ -53,6 +55,7 @@
 (def main_prescaler 0)
 (eeprom_init)
 (throttle_init)
+(esp_now_init)
 ; display thread
 (defun display_th(){
     (loopwhile t {
@@ -86,7 +89,7 @@
         (if (> main_prescaler 10)
             (setq main_prescaler 0)
         )
-
+        (data_send)
         (sleep 0.03)
     })
 })
