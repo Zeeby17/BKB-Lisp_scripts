@@ -1,6 +1,3 @@
-(define min_cal_add 1)
-(define mid_cal_add 2)
-(define max_cal_add 3)
 
 (defun utils_map(x in_min in_max out_min out_max)
 (/ (* (- x in_min) (- out_max out_min)) (+ (- in_max in_min) out_min))

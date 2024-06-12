@@ -78,6 +78,7 @@
  
      (bufset-f32 data_send 0 throttle      'little-endian); throttle 
      (bufset-i8 data_send 4 direction     ); direction
+     (bufset-i8 data_send 5 torq_mode     ); torque mode
      (esp-now-send peer data_send)
      (free data_send)
 })

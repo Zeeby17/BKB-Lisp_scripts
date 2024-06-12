@@ -21,6 +21,7 @@
 (def distance       15.0) 
 (def throttle 0.0)
 (def direction 0)
+(def torq_mode 0)
 
 (esp-now-start)
 
@@ -30,7 +31,8 @@
        
      (setq throttle     (bufget-f32 data 0  'little-endian))
      (setq direction    (bufget-i8  data 4)) 
-    
+     (setq torq_mode    (bufget-i8  data 5)) ; torque mode
+     (print torq_mode)
      (rcode-run-noret can-id (list 'set-remote-state throttle 0 0 0 direction))
      (free data)  
   }

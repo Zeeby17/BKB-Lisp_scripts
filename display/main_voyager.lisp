@@ -53,9 +53,12 @@
 (def direction 1)
 (def menu_index 0)
 (def main_prescaler 0)
+(def torq_mode 0)
 (eeprom_init)
 (throttle_init)
+(setq torq_mode(eeprom-read-i torq_mode_add))
 (esp_now_init)
+
 ; display thread
 (defun display_th(){
     (loopwhile t {
@@ -75,6 +78,7 @@
             (off_sequence)                             
         })
 
+
         ; change direction
         (if (> main_prescaler 10){
             (if (and (= cfg_pressed_short 1) (< (get-adc-raw) (+ (eeprom-read-i min_cal_add) 20))){
@@ -84,6 +88,13 @@
                 )
             })
 
+            (if (and (= on_pressed_short 1) (< (get-adc-raw) (+ (eeprom-read-i min_cal_add) 20))){
+                (setq torq_mode (+ torq_mode 1))
+                (if(> torq_mode 3)
+                    (setq torq_mode 0)
+                )
+                (eeprom-store-i torq_mode_add torq_mode)                 
+            })
         })
 
         (if (> main_prescaler 10)
