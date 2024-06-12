@@ -2,18 +2,34 @@
 
 (esp-now-start)
 ; Broadcast address
-(def other-peer '(255 255 255 255 255 255))
+;(def other-peer '(255 255 255 255 255 255))
+(def peer '(52 183 218 163 112 25))
 (def mac-rx '())
 (def cur_set      0.0)
 (def vin          0.0)
 (def rpm          0.0)
 (def temp         0.0)
 (def speed        0.0)
-(def dist         0.0)
+(def distance         0.0)
 (def js_x         0.0); x axis
 (def js_y         0.0); y axis
 (def button_state 0.0); button config, thumbstick button
 (def enable_throttle 0.0)
+(def I_motor         0.0)
+(def batt_lvl        0.0)
+(def poles           0.0)
+(def pulley          0.0)
+(def wheel_diam      0.0)
+(def batt_type       0.0)
+(def batt_type       0.0)
+(def rec_fw_may      0.0)
+(def rec_fw_min      0.0)
+(def rec_lisp_may    0.0)
+(def rec_lisp_min    0.0)
+(def skate_fw_may    0.0)
+(def skate_fw_min    0.0)
+
+
 (def secs 0.0)
 (def time 0.0)
 (def last_update 0.0)
@@ -21,7 +37,8 @@
 
 (to-float secs)
 
-(esp-now-add-peer other-peer)
+;(esp-now-add-peer other-peer)
+(esp-now-add-peer peer)
 
 (defun utils_map(x in_min in_max out_min out_max)
 (/ (* (- x in_min) (- out_max out_min)) (+ (- in_max in_min) out_min))
@@ -31,8 +48,19 @@
     (setq rpm             (bufget-i16 data 0))
     (setq vin             (bufget-f32 data 2))
     (setq temp            (bufget-f32 data 6))
-    (setq speed           (bufget-i16 data 10))
-    (setq enable_throttle (bufget-i8  data 11))    
+    (setq I_motor         (bufget-f32 data 10))
+    (setq poles           (bufget-i8  data 14))
+    (setq pulley          (bufget-f32 data 15)) 
+    (setq wheel_diam      (bufget-f32 data 19))
+    (setq batt_type       (bufget-i8  data 23))
+    (setq rec_fw_may      (bufget-i8  data 24)) 
+    (setq rec_fw_min      (bufget-i8  data 25))
+    (setq rec_lisp_may    (bufget-i8  data 26))
+    (setq rec_lisp_min    (bufget-i8  data 27))
+    (setq skate_fw_may    (bufget-i8  data 28))
+    (setq skate_fw_min    (bufget-i8  data 29))
+    (setq distance        (bufget-f32 data 30))
+               
     (free data)
  }
 )
