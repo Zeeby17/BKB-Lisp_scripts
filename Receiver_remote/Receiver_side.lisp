@@ -57,7 +57,7 @@
      
      (throttle_elapsed_time 5.0)
     
-     (rcode-run-noret can-id (list 'set-remote-state set_cur 0 1 0 0))
+     (rcode-run-noret can-id (list 'set-remote-state set_cur 0 0 0 0))
      (free data)  
   }
 )
