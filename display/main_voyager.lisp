@@ -1,6 +1,6 @@
 ; includes
 (define lisp_V 1.0)
-
+(define THR_TIMEOUT 5.0)
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
 (import "res/BKB_LOGO.jpg" 'logo)
@@ -24,6 +24,8 @@
 (import "screens/info_screen.lisp" 'info_screen)
 (import "screens/esk8_screen.lisp" 'esk8_screen)
 (import "screens/remote_screen.lisp" 'remote_screen)
+(import "res/eeprom_init.lisp" 'eeprom_init)
+(import "res/throttle.lisp" 'throttle)
 (read-eval-program disp-text)
 (read-eval-program speed_box)
 (read-eval-program display_init)
@@ -41,12 +43,16 @@
 (read-eval-program info_screen)
 (read-eval-program esk8_screen)
 (read-eval-program remote_screen)
+(read-eval-program eeprom_init)
+(read-eval-program throttle)
+
 ; display initialization
 (display_init)
 (def direction 1)
 (def menu_index 0)
 (def main_prescaler 0)
-
+(eeprom_init)
+(throttle_init)
 ; display thread
 (defun display_th(){
     (loopwhile t {
