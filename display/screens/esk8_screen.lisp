@@ -1,10 +1,6 @@
 ;TODO move def to a file
 @const-symbol-strings
-(def M_POLES 6)
-(def PULLEY 3.5)
-(def W_DIAMETER 7.5)
 (def UNIT "mm")
-(def BATTERY "4s2p")
 (def firts_iteration_esk 0)
 (def esk8_screen_num 0)
 
@@ -29,7 +25,7 @@
             (disp-render text_box (+ x_offset 1) (+ y_offset -1) '(0 0xFFFFFF))
             (img-clear text_box)
                       
-            (txt-block-c numb_box 1 60 0  font_20x30 (str-from-n M_POLES "%d")) ; firmware version
+            (txt-block-c numb_box 1 60 0  font_20x30 (str-from-n poles "%d"))
             (disp-render numb_box (+ x_offset 4) (+ y_offset 17) '(0 0xFFFFFF))
             (img-clear numb_box)
             
@@ -43,7 +39,7 @@
             (disp-render text_box (+ x_offset 1) (+ y_offset -1) '(0 0xFFFFFF))
             (img-clear text_box)
             
-            (txt-block-c numb_box 1 60 0  font_20x30 (str-from-n W_DIAMETER "%.2f"));
+            (txt-block-c numb_box 1 60 0  font_20x30 (str-from-n (* wheel_diam 1000) "%.2f"));in mm
             (disp-render numb_box (+ x_offset 4) (+ y_offset 17) '(0 0xFFFFFF))
             (img-clear numb_box)
             
@@ -58,7 +54,7 @@
             (disp-render text_box (+ x_offset 1) (+ y_offset -1) '(0 0xFFFFFF))
             (img-clear text_box)
             
-            (txt-block-c numb_box 1 60 0  font_20x30 (str-from-n PULLEY "%.1f:1"));
+            (txt-block-c numb_box 1 60 0  font_20x30 (str-from-n pulley "%.1f:1"));
             (disp-render numb_box (+ x_offset 4) (+ y_offset 17) '(0 0xFFFFFF))
             (img-clear numb_box)
             
@@ -70,7 +66,7 @@
             (disp-render text_box (+ x_offset 1) (+ y_offset -1) '(0 0xFFFFFF))
             (img-clear text_box)
             
-            (txt-block-c numb_box 1 60 0  font_20x30 BATTERY);
+            (txt-block-c numb_box 1 60 0  font_20x30 (str-from-n batt_type "%ds"));
             (disp-render numb_box (+ x_offset 4) (+ y_offset 17) '(0 0xFFFFFF))
             (img-clear numb_box)
             
