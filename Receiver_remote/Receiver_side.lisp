@@ -67,7 +67,7 @@
       (setq vin     (canget-vin can-id)) 
       (setq temp    (canget-temp-fet can-id))   
       (setq speed   (canget-speed can-id))
-      (setq distance    (canget-dist can-id))   
+      (setq distance (rcode-run can-id 0.0 '(get-dist-abs)))
       (setq I_motor (canget-current can-id))
 
       (bufset-f32 data 0  (+ rpm 0.01))
@@ -90,7 +90,7 @@
 )
 
 (defun proc-data (src des data rssi) {
-     (print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
+     ;(print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
      (setq mac-tx src)
      (data-received data)
      (esp-now-add-peer mac-tx)

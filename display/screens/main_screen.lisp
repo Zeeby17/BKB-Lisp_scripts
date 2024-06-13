@@ -10,11 +10,14 @@
     (write_direction direction (+ x_offset 59) (+ y_offset 0))
     (bat_soc (read_SOC) 2.5 4.25 0 1 (+ x_offset 85) (+ y_offset 0))
     (bat_soc 40 36 48 0 0  (+ x_offset 8) (+ y_offset 0))
-    (write_amps 100.2 (+ x_offset 3) (+ y_offset 50))
-    (write_trip 150.4 0 (+ x_offset 60) (+ y_offset 50))
-    (if (= UNITS 1)
-        (write-speed (speed_cal) 1 (+ x_offset 33) (+ y_offset 19) speed_color)          ; km
+    (write_amps I_motor (+ x_offset 3) (+ y_offset 50))
+    (if (= UNITS 1){
+         (write-speed (speed_cal) 1 (+ x_offset 33) (+ y_offset 19) speed_color)          ; km
+         (write_trip distance 1 (+ x_offset 63) (+ y_offset 50))
+    }
+    {
         (write-speed (* (speed_cal) 0.621) 0 (+ x_offset 33) (+ y_offset 19) speed_color)  ; miles
-    )
+        (write_trip distance 0 (+ x_offset 63) (+ y_offset 50))
+    })
 })
 @const-end

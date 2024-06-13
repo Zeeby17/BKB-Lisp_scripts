@@ -3,6 +3,7 @@
 (define mid_cal_add 2)
 (define max_cal_add 3)
 (define torq_mode_add 4)
+(define total_trip_add 5)
 
 (defun eeprom_init(){
 
@@ -13,6 +14,7 @@
             (eeprom-store-i 2 2048)  
             (eeprom-store-i 3 4076)
             (eeprom-store-i 4 1)
+            (eeprom-store-f 5 0.0)
             (eeprom-store-i 32 0xFFFF)
     })
 )}

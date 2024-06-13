@@ -3,9 +3,15 @@
 (def input_on)
 (define on_butt 10)
 (define latch_pin 20)
+(def temp_trip 0.0)
 @const-start
 (defun off_sequence(){
     
+    (setq temp_trip (eeprom-read-f total_trip_add))
+    (setq temp_trip (+ temp_trip (/ distance 1000)))
+
+    (eeprom-store-f total_trip_add (to-float temp_trip)) ; store the total trip in Km;
+
     (gpio-write latch_pin 0)
     ;configure USB pins as output and set them to low
     (gpio-configure 18 'pin-mode-out)
