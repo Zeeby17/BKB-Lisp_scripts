@@ -1,7 +1,3 @@
-;TODO move def to a file
-
-(def UNITS 0); 1--> imperial 0--> metric
-
 (def firts_iteration_remote 0)
 (def remote_screen_num 0)
 

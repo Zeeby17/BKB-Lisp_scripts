@@ -11,7 +11,7 @@
             (setq thum_pressed_short 0)
             (setq throttle_feed_time (systime));feed timeout
         })
-        (if (and (= throttle_status 1) (> (get-adc-raw) (+ (eeprom-read-i mid_cal_add) 10))){
+        (if (and (= throttle_status 1) (> (get-adc-raw) (+ (eeprom-read-i mid_cal_add) 100))){
             (setq throttle_feed_time (systime));feed timeout
         })
         (if(> (secs-since throttle_feed_time) THR_TIMEOUT){
@@ -25,7 +25,6 @@
         (setq joy_min (eeprom-read-i min_cal_add))
         (setq joy_mid (eeprom-read-i mid_cal_add))
         (setq joy_max (eeprom-read-i max_cal_add))
-        
         (if(= throttle_status 1){
             (if (> joy_Y joy_mid)
                 (setq throttle (utils_map joy_Y joy_mid joy_max 0.0 1.0))
