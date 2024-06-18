@@ -137,24 +137,6 @@
   }
  )
 
-(defun distance-param () {
-    (loopwhile-thd 50 t {
-        (if (not-eq distance timeout) {
-             (setq distance (rcode-run can-id 0.1 '(get-dist-abs)))
-                 })
-             (if (eq distance timeout) {(print distance)(setq distance aux)
-              }
-             {(setq aux distance)}
-            )
-        (print distance)
-        (sleep 0.2)
-    }
-   )
-  }
- )
-
-
-
 (defun loop-state () {
     (loopwhile-thd 50 t {
         (var data (bufcreate 40))
