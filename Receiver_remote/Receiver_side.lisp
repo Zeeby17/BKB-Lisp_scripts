@@ -43,10 +43,11 @@
 (def throttle 0.0)
 (def direction 0)
 (def torq_mode 0)
+(def aux      0.0)
 
 (esp-now-start)
 
-;(esp-now-add-peer other-peer) 
+;(esp-now-add-peer other-peer)
 (esp-now-add-peer peer)
 
 (defun data-received (data) {
@@ -54,8 +55,10 @@
      (setq throttle     (bufget-f32 data 0  'little-endian))
      (setq direction    (bufget-i8  data 4))
      (setq torq_mode    (bufget-i8  data 5)) ; torque mode
+
+
      (rcode-run-noret can-id (list 'set-remote-state throttle 0 0 0 direction))
-     (free data)  
+     (free data)
   }
 )
 
@@ -63,11 +66,21 @@
 
 (defun data_to_send (data) {
 
-      (setq rpm     (canget-rpm can-id)) 
-      (setq vin     (canget-vin can-id)) 
-      (setq temp    (canget-temp-fet can-id))   
+      (setq rpm     (canget-rpm can-id))
+      (setq vin     (canget-vin can-id))
+      (setq temp    (canget-temp-fet can-id))
       (setq speed   (canget-speed can-id))
-      (setq distance (rcode-run can-id 0.0 '(get-dist-abs)))
+      ;(setq distance (rcode-run can-id 0.0 '(get-dist-abs)))
+
+      (if (not-eq distance timeout) {
+            (setq distance (rcode-run can-id 0.1 '(get-dist-abs)))
+               })
+            (if (eq distance timeout) {(setq distance aux)
+               }
+            {(setq aux distance)}
+            )
+       ; (sleep 0.2)
+
       (setq I_motor (canget-current can-id))
 
       (bufset-f32 data 0  (+ rpm 0.01))
@@ -86,7 +99,7 @@
       (bufset-i8  data 31 skate_fw_min)
       (bufset-f32 data 32 distance)
       (esp-now-send mac-tx data)
-  } 
+  }
 )
 
 (defun proc-data (src des data rssi) {
@@ -95,7 +108,7 @@
      (data-received data)
      (esp-now-add-peer mac-tx)
    })
-                                                                
+
 (defun event-handler ()
     (loopwhile t
         (recv
@@ -103,7 +116,7 @@
            (_ nil)
 )))
 
-(defun main () { 
+(defun main () {
     (event-register-handler (spawn event-handler))
     (event-enable 'event-esp-now-rx)
     (loop-state)
@@ -114,15 +127,33 @@
 ; all motor info or esc info could be added in this thread
 (defun param-motor () {
     (loopwhile-thd 50 t {
-       (setq poles       (rcode-run can-id 0.0 '(conf-get 'si-motor-poles))); read the config parameters  
+       (setq poles       (rcode-run can-id 0.0 '(conf-get 'si-motor-poles))); read the config parameters
        (setq pulley      (rcode-run can-id 0.0 '(conf-get 'si-gear-ratio))); read the config parameters
        (setq wheel_diam  (rcode-run can-id 0.0 '(conf-get 'si-wheel-diameter))); read the config parameters
        (setq batt_type   (rcode-run can-id 0.0 '(conf-get 'si-battery-cells)))
-       (sleep 1.0)   
+       (sleep 1.0)
     }
    )
   }
  )
+
+(defun distance-param () {
+    (loopwhile-thd 50 t {
+        (if (not-eq distance timeout) {
+             (setq distance (rcode-run can-id 0.1 '(get-dist-abs)))
+                 })
+             (if (eq distance timeout) {(print distance)(setq distance aux)
+              }
+             {(setq aux distance)}
+            )
+        (print distance)
+        (sleep 0.2)
+    }
+   )
+  }
+ )
+
+
 
 (defun loop-state () {
     (loopwhile-thd 50 t {
@@ -130,7 +161,7 @@
         (data_to_send data)
         ;(print (list "Input Voltage" (rcode-run can-id 0.1 '(get-batt))))
         (free data)
-        (sleep 0.2)   
+        (sleep 0.2)
     }
    )
   }
