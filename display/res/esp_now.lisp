@@ -1,4 +1,5 @@
-(def peer '(52 183 218 163 112 37))
+(def peer '(52 183 218 163 112 25)); Mac board n 9
+;(def peer '(52 183 218 163 112 37)); Mac board n 1
 ;(def other-peer '(255 255 255 255 255 255))
 (def mac-rx '())
 (def data (bufcreate 55))
@@ -33,7 +34,7 @@
     (esp-now-add-peer peer)
     (event-register-handler (spawn event-handler))
     (event-enable 'event-esp-now-rx)
-        
+
 })
 
 (defun data_received (data) {
@@ -52,7 +53,7 @@
     (setq skate_fw_may    (bufget-i8  data 30))
     (setq skate_fw_min    (bufget-i8  data 31))
     (setq distance        (bufget-f32  data 32))
- 
+
     (free data)
 })
 
@@ -65,7 +66,7 @@
     (esp-now-add-peer peer)
 
 })
-    
+
 (defun event-handler ()
     (loopwhile t
         (recv
@@ -74,9 +75,9 @@
 )))
 
 (defun data_send() {
-     (var data_send (bufcreate 40))     
- 
-     (bufset-f32 data_send 0 throttle      'little-endian); throttle 
+     (var data_send (bufcreate 40))
+
+     (bufset-f32 data_send 0 throttle      'little-endian); throttle
      (bufset-i8 data_send 4 direction     ); direction
      (bufset-i8 data_send 5 torq_mode     ); torque mode
      (esp-now-send peer data_send)
