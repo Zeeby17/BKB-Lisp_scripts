@@ -32,6 +32,11 @@
         (setq bar_val (utils_map soc min max 1 39))
     )
 
+    (if(and (= rem_sk 0) (= porc_volt 0))
+        (setq bar_val (utils_map (* soc 10) (* min 10) (* max 10) 1 39))
+        (setq bar_val (utils_map soc min max 1 39))
+    )
+
     (def bar_col 0)
     (setq bar_col (utils_map soc min max 1 15))
     (setq bar_col (m-trunc bar_col 1 16)) 
@@ -53,12 +58,15 @@
     (if (= porc_volt 1)
          (txt-block-c bat_box 14 20 8 font_9x14 (str-from-n soc "%d%%"))
          (progn
-             (if(and (= rem_sk 1))
-                (txt-block-c bat_box 14 20 8 font_9x14 (str-from-n soc "%.1fV"))
-                (txt-block-c bat_box 14 20 8 font_9x14 (str-from-n soc "%dV"))
-             )
+             (if(and (= rem_sk 1)){
+                (txt-block-c bat_box 14 20 8 font_9x14 (str-from-n (to-i (* soc 100)) "%03dV"))
+                (txt-block-c bat_box 14 12 8 font_9x14  ".")
+             }
+             {
+                (txt-block-c bat_box 14 20 8 font_9x14 (str-from-n (to-i (* soc 10)) "%03dV"))
+                (txt-block-c bat_box 14 20 8 font_9x14  ".")
+             })
          )
-
     )
     (disp-render bat_box px py '(0 0xFF0000 0xFF6000 0xFFFF00 0xE0FF00 0xD9FF00 0xBAFF00 0x9BFF00 0x70FF00 0x7CFF00 0x5DFF00 0x3EFF00  0x1FFF00 0x00FF00 0x0000FF 0xFFFFFF))
 
