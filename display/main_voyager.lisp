@@ -6,8 +6,11 @@
 ; Un comment the mac to connect with
 ;(def other-peer '(255 255 255 255 255 255)) ; Macbroadcast
 ;(def peer '(52 183 218 163 112 37)); Mac board n 1
-(def peer '(52 183 218 163 112 33)); Mac board n 3
-; (def peer '(52 183 218 163 112 25)); Mac board n 9
+;(def peer '(52 183 218 163 97 241)); Mac board n 2
+;(def peer '(52 183 218 163 112 33)); Mac board n 3
+;(def peer '(52 183 218 163 111 253)); Mac board n 4
+(def peer '(52 183 218 163 112 57)); Mac board n 5
+;(def peer '(52 183 218 163 112 25)); Mac board n 9
 
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
