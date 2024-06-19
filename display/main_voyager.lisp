@@ -2,8 +2,13 @@
 (define lisp_V 1.0)
 (define THR_TIMEOUT 5.0)
 (def UNITS 0); 0--> imperial 1--> metric
-(def vin_min 10.0)
-(def vin_max 13.0) ; TODO read vin min and max from ESC
+
+; Un comment the mac to connect with
+;(def other-peer '(255 255 255 255 255 255)) ; Macbroadcast
+;(def peer '(52 183 218 163 112 37)); Mac board n 1
+(def peer '(52 183 218 163 112 33)); Mac board n 3
+; (def peer '(52 183 218 163 112 25)); Mac board n 9
+
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
 (import "res/BKB_LOGO.jpg" 'logo)
@@ -53,6 +58,7 @@
 
 ; display initialization
 (display_init)
+(print "Self mac" (get-mac-addr)) ; self mac address
 (def direction 1)
 (def menu_index 0)
 (def main_prescaler 0)

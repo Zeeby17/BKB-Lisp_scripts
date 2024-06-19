@@ -5,6 +5,10 @@
 ; porc_volt -> 1 porcentage 0 volts
 ; max -> how many volts are the max, if percentage is displayed this parameter is 100
 ; min -> px py position, pixel
+
+(def vin_min 10.0)
+(def vin_max 13.0)
+
 @const-start
 (defun m-trunc (v min max)
     (cond
