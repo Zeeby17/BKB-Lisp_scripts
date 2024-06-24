@@ -20,8 +20,8 @@
 ;(def peer '(52 183 218 163 95 233)) ; Mac board n 2
 ;(def peer '(52 183 218 164 13 205)) ; Mac board n 3
 ;(def peer '(52 183 218 164 59 205)) ; Mac board n 4
-;(def peer '(52 183 218 164 59 197)) ; Mac board n 5
-(def peer '(52 183 218 164 10 141)) ; Mac board n 9
+(def peer '(52 183 218 164 59 197)) ; Mac board n 5
+;(def peer '(52 183 218 164 10 141)) ; Mac board n 9
 (def mac-tx          '())
 (def set_cur         0.0)
 (def data (bufcreate 40))
@@ -199,22 +199,22 @@
 
     (loopwhile-thd 50 t {
      (if (and (= torq_mode 0.0) (= flag_l 0)) {
-     (rcode-run-noret can-id  '(conf-set 'l-current-max-scale 0.15)) ; 0.15
+     (rcode-run-noret can-id  '(conf-set 'l-current-max-scale 0.25)) ; 0.15
      (setq flag_l 1) (setq flag_s 0)
       }
      )
      (if (and (= torq_mode 1.0) (= flag_m 0)) {
-     (rcode-run-noret can-id '(conf-set 'l-current-max-scale 0.18)) ; 0.18
+     (rcode-run-noret can-id '(conf-set 'l-current-max-scale 0.50)) ; 0.18
      (setq flag_m 1) (setq flag_l 0)
        }
       )
      (if (and (= torq_mode 2.0) (= flag_h 0)) {
-     (rcode-run-noret can-id '(conf-set 'l-current-max-scale 0.22)) ; 0.22
+     (rcode-run-noret can-id '(conf-set 'l-current-max-scale 0.75)) ; 0.22
      (setq flag_h 1) (setq flag_m 0)
        }
       )
      (if (and (= torq_mode 3.0) (= flag_s 0)) {
-     (rcode-run-noret can-id '(conf-set 'l-current-max-scale 0.35)) ; 0.35
+     (rcode-run-noret can-id '(conf-set 'l-current-max-scale 1.0)) ; 0.35
      (setq flag_s 1) (setq flag_h 0)
       }
       )
