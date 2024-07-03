@@ -1,5 +1,13 @@
+;Script adapted for FW versions starting from 6.00. For FW version 6.0.5 or higher
+;it is necessary to install the code-server. code-server allows the execution of
+;other functionalities that are not implemented in 6.00 version.
+
+(def FW_VERSION 6.00)
+
+(if (>= FW_VERSION 6.05){
 (import "pkg@://vesc_packages/lib_code_server/code_server.vescpkg" 'code-server)
 (read-eval-program code-server)
+})
 
 ; values to send
 ; current motor (get value)
@@ -13,7 +21,6 @@
 ; ESC version
 ; distance Km
 
-;(def can-id 13)
 (def can-id -1)
 ;(def other-peer '(255 255 255 255 255 255))
 ;(def peer '(52 183 218 163 205 411)); Mac board n 1
@@ -34,9 +41,9 @@
 (def button_state    0.0)
 (def enable_throttle 0.0)
 (def I_motor         0.0)
-(def poles           1.0)
-(def pulley          1.0)
-(def wheel_diam      0.0)
+(def poles           14.0)
+(def pulley          2.66)
+(def wheel_diam      0.105)
 (def batt_type       0.0)
 (def rec_fw_may      0.0)
 (def rec_fw_min      0.0)
@@ -47,9 +54,9 @@
 (def time            0.0)
 (def secs            0.0)
 (def last_time       0.0)
-(def throttle 0.0)
-(def direction 0)
-(def torq_mode 0)
+(def throttle        0.0)
+(def direction         0)
+(def torq_mode         0)
 (def aux      1.0)
 (def aux_1    1.0) ; to avoid division by zero in speed algorithm in the remote side
 (def flag_l      0)
@@ -57,6 +64,7 @@
 (def flag_h      0)
 (def flag_s      0)
 (def first_start 1)
+
 
 ;TODO: List all can devices and check if the listed ID's belong to an ESC controller.
 ;it can be done through FW version, HW or so.
@@ -78,8 +86,23 @@
      (setq direction    (bufget-i8  data 4))
      (setq torq_mode    (bufget-i8  data 5)) ; torque mode
 
-     (rcode-run-noret can-id (list 'set-remote-state throttle 0 0 0 direction))
-     (free data)
+
+ (if (>= FW_VERSION 6.05) {
+       (rcode-run-noret can-id (list 'set-remote-state throttle 0 0 0  direction)) ; to use with FW 6.05+
+     }
+   {
+    (if (> throttle 0.0 ) {
+        (if (= direction 1) (setq direction 1)(setq direction -1))
+        (canset-current-rel can-id (* throttle direction))
+       }
+      {
+        (canset-brake-rel can-id throttle)
+       }
+     )
+   }
+ )
+
+   (free data)
   }
 )
 
@@ -87,7 +110,7 @@
 
 (defun data_to_send (data_send) {
 
-      (sleep 0.2)
+      (sleep 0.25)
 
       (setq rpm     (canget-rpm can-id))
       (setq vin     (canget-vin can-id))
@@ -95,14 +118,20 @@
       (setq speed   (canget-speed can-id))
       (setq I_motor (canget-current can-id))
 
-      (if (not-eq distance timeout) {
-            (setq distance (rcode-run can-id 0.1 '(get-dist-abs)))
-               })
-            (if (eq distance timeout) {(print "dist:")(print distance)(setq distance aux)
-               }
-            {(setq aux distance)}
+(if (>= FW_VERSION 6.05) {
+        (if (not-eq distance timeout) {
+               (setq distance (rcode-run can-id 0.1 '(get-dist-abs)))
+                 }
+             )
+         (if (eq distance timeout) {(print "dist:")(print distance)(setq distance aux)
+              }
+          {(setq aux distance)}
             )
-
+          }
+          {
+           ;(setq distance (canget-dist can-id)) ; for version 6.00 is not absolute
+            }
+        )
 
       (bufset-f32 data_send 0 (+ rpm 0.01))
       (bufset-f32 data_send 4  vin)
@@ -147,7 +176,7 @@
     (event-register-handler (spawn event-handler))
     (event-enable 'event-esp-now-rx)
     (set-motor-torque)
-    (param-motor)
+   ;(param-motor)
     (loop-state)
   }
 )
@@ -156,6 +185,7 @@
 (defun param-motor () {
     (loopwhile-thd 60 t {
 
+   (if (>= FW_VERSION 6.05) {
       (if (not-eq poles timeout) {
             (setq poles (rcode-run can-id 0.1 '(conf-get 'si-motor-poles)))
                })
@@ -187,8 +217,9 @@
                }
             {(setq aux_1 batt_type)}
             )
-
-    (sleep 1.0)
+         }
+       )
+     (sleep 1.0)
     }
    )
   }
@@ -199,22 +230,26 @@
 
     (loopwhile-thd 50 t {
      (if (and (= torq_mode 0.0) (= flag_l 0)) {
-     (rcode-run-noret can-id  '(conf-set 'l-current-max-scale 0.25)) ; 0.15
-     (setq flag_l 1) (setq flag_s 0)
+   ;  (rcode-run-noret can-id  '(conf-set 'l-current-max-scale 0.25)) ; 0.15
+      (can-cmd can-id (str-from-n 0.25 "(conf-set 'l-current-max-scale %.2f)"))
+      (setq flag_l 1) (setq flag_s 0)
       }
      )
      (if (and (= torq_mode 1.0) (= flag_m 0)) {
-     (rcode-run-noret can-id '(conf-set 'l-current-max-scale 0.50)) ; 0.18
+     ;(rcode-run-noret can-id '(conf-set 'l-current-max-scale 0.50)) ; 0.18
+     (can-cmd can-id (str-from-n 0.50 "(conf-set 'l-current-max-scale %.2f)")) ; for Version 6.00
      (setq flag_m 1) (setq flag_l 0)
        }
       )
      (if (and (= torq_mode 2.0) (= flag_h 0)) {
-     (rcode-run-noret can-id '(conf-set 'l-current-max-scale 0.75)) ; 0.22
-     (setq flag_h 1) (setq flag_m 0)
+    ; (rcode-run-noret can-id '(conf-set 'l-current-max-scale 0.75)) ; 0.22
+      (can-cmd can-id (str-from-n 0.75 "(conf-set 'l-current-max-scale %.2f)")) ; for Version 6.00
+      (setq flag_h 1) (setq flag_m 0)
        }
       )
      (if (and (= torq_mode 3.0) (= flag_s 0)) {
-     (rcode-run-noret can-id '(conf-set 'l-current-max-scale 1.0)) ; 0.35
+     ;(rcode-run-noret can-id '(conf-set 'l-current-max-scale 1.0)) ; 0.35
+     (can-cmd can-id (str-from-n 1.0 "(conf-set 'l-current-max-scale %.2f)")) ; for Version 6.00
      (setq flag_s 1) (setq flag_h 0)
       }
       )
@@ -229,7 +264,7 @@
         (var data_send (bufcreate 55))
         (data_to_send data_send)
         (free data_send)
-        (sleep 0.2)
+        (sleep 0.2) ;0.2
     }
    )
   }
