@@ -26,7 +26,7 @@
         (if (and (= throttle_status 1) (> joy_Y (+ joy_mid 100))){
             (setq throttle_time_out THR_TIMEOUT);feed timeout
         })
-        
+
         (setq throttle_time_out (- throttle_time_out (secs-since last_update_throttle)))
         (setq last_update_throttle (systime))
 
@@ -40,7 +40,7 @@
         {
             (setq throttle_status 1) ; enable
         })
-        
+
         (if(= throttle_status 1){
             (if (> joy_Y joy_mid)
                 (setq throttle (utils_map joy_Y joy_mid joy_max 0.0 1.0))
@@ -50,12 +50,12 @@
         {
             (if (<= joy_Y joy_mid)
                 (setq throttle (* (utils_map joy_Y joy_mid joy_min 0.0 1.0) -1))
-            )              
+            )
         })
-    (sleep 0.05)
+    (sleep 0.05);
     })
 })
 
 (defun throttle_init(){
-     (spawn 50 throttle_th)   
+     (spawn 50 throttle_th)
 })

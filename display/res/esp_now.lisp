@@ -25,10 +25,15 @@
 (def distance     0.0)
 (def js_x         0.0); x axis
 (def js_y         0.0); y axis
+(def counter      0.0)
+(def counter_1    0.0)
+(def val   1.0)
+(def val_1 0.0)
+(def sleep_time   140.0)
 
 (defun esp_now_init(){
     (esp-now-start)
-    (esp-now-add-peer peer)
+    (esp-now-add-peer peer) ; add here the mac for the receiver, keep in mind this when pairing mode
     (event-register-handler (spawn event-handler))
     (event-enable 'event-esp-now-rx)
 
@@ -51,13 +56,13 @@
     (setq skate_fw_min    (bufget-i8  data 31))
     (setq distance        (bufget-f32  data 32))
 
+    (print poles)
     (free data)
 })
 
 
-
 (defun proc-data (src des data rssi) {
-    ;(print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
+    (print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
     (data_received data)
     ;(setq mac-rx src)
     (esp-now-add-peer peer)
@@ -71,6 +76,7 @@
            (_ nil)
 )))
 
+
 (defun data_send() {
      (var data_send (bufcreate 40))
 
@@ -78,5 +84,22 @@
      (bufset-i8 data_send 4 direction     ); direction
      (bufset-i8 data_send 5 torq_mode     ); torque mode
      (esp-now-send peer data_send)
+
+     (setq counter (+ counter 1))
+     (setq counter_1 (+ counter_1 1))
+
      (free data_send)
+
+     (if (= counter val) {
+         (gpio-configure-hold 20 1) ; latch the gpio_pin_20 before enter in light sleep mode
+         (sleep-light sleep_time)   ;turn off the radio(wifi,bt), enter in light sleep mode.
+           }
+       )
+     (if (> counter_1 val_1) {
+         (wifi-start)
+         (gpio-configure-hold 20 0) ;(gpio-hold-state 20 0)
+         (setq counter   0.0)
+         (setq counter_1 0.0)
+        })
+
 })

@@ -1,16 +1,16 @@
 ; includes
 (define lisp_V 1.0)
-(define THR_TIMEOUT 5.0)
+(define THR_TIMEOUT 2.5) ; 5 for 160Mhz
 (def UNITS 0); 0--> imperial 1--> metric
 
 ; Un comment the mac to connect with
-;(def other-peer '(255 255 255 255 255 255)) ; Macbroadcast
+;(def peer '(255 255 255 255 255 255)) ; Mac broadcast for pairing
 ;(def peer '(52 183 218 163 112 37)); Mac board n 1
 ;(def peer '(52 183 218 163 97 241)); Mac board n 2
 ;(def peer '(52 183 218 163 112 33)); Mac board n 3
 ;(def peer '(52 183 218 163 111 253)); Mac board n 4
-(def peer '(52 183 218 163 112 57)); Mac board n 5
-;(def peer '(52 183 218 163 112 25)); Mac board n 9
+;(def peer '(52 183 218 163 112 57)); Mac board n 5
+(def peer '(52 183 218 163 112 25)); Mac board n 9
 
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
@@ -59,6 +59,8 @@
 (read-eval-program throttle)
 (read-eval-program esp_now)
 
+
+
 ; display initialization
 (display_init)
 (print "Self mac" (get-mac-addr)) ; self mac address
@@ -70,7 +72,6 @@
 (throttle_init)
 (setq torq_mode(eeprom-read-i torq_mode_add))
 (esp_now_init)
-
 ; display thread
 (defun display_th(){
     (loopwhile t {
@@ -79,7 +80,7 @@
         ((eq menu_index 0) (draw_main_screen))
         ((eq menu_index 1) (config_screen))
         )
-        
+
         (if (= cfg_pressed_long 1){
             (setq menu_index (+ menu_index 1))
             (setq cfg_pressed_long 0)
@@ -87,7 +88,7 @@
         })
 
         (if (= on_pressed_long 1){
-            (off_sequence)                             
+            (off_sequence)
         })
 
 
@@ -105,27 +106,39 @@
                 (if(> torq_mode 3)
                     (setq torq_mode 0)
                 )
-                (eeprom-store-i torq_mode_add torq_mode)                 
+                (eeprom-store-i torq_mode_add torq_mode)
             })
         })
 
         (if (> main_prescaler 10)
             (setq main_prescaler 0)
-        )
+           )
+
+       (if (= throttle_status 1) {
+        (setq val_1 1.0) ; set this value when throttle is enabled
+        (setq sleep_time 0.12)
         (data_send)
-        (sleep 0.03)
+         }
+         {
+         (setq val_1 5.0) ;5 , 20 ,17
+         (setq sleep_time 0.2) ; change the sleep time to get less power consumption
+         (data_send)
+         }
+           )
+       ; (sleep 0.006)
     })
 })
 
 (defun inputs_th(){
     (loopwhile t{
-        ; read on button 
+        ; read on button
         (read_on)
         (read_cfg)
         (read_thum)
         (sleep 0.1)
     })
 })
+
 
 ; spawn threads
 (spawn 100 display_th)
