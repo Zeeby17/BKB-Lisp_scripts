@@ -9,11 +9,11 @@
 (def enable_throttle 0)
 (def dist         0.0)
 (def dist         0.0)
-(def i_motor   0.0)
-(def poles        1)
-(def pulley       1.0)
-(def wheel_diam   1.0)
-(def batt_type    0)
+(def i_motor      0.0)
+(def poles        14)
+(def pulley       2.66)
+(def wheel_diam   0.105)
+(def batt_type    3)
 (def rec_fw_may   0)
 (def rec_fw_min   0)
 (def rec_lisp_may 0)
@@ -44,10 +44,18 @@
     (setq vin             (bufget-f32 data 4))
     (setq temp            (bufget-f32 data 8))
     (setq i_motor         (bufget-f32 data 12))
-    (setq poles           (bufget-i8  data 16))
-    (setq pulley          (bufget-f32 data 17))
-    (setq wheel_diam      (bufget-f32 data 21))
-    (setq batt_type       (bufget-i8  data 25))
+    (if(not-eq (bufget-i8  data 16) 0)
+        (setq poles (bufget-i8  data 16))
+    )
+    (if (not-eq (bufget-f32 data 17) 0.0 )
+        (setq pulley (bufget-f32 data 17))
+    )
+    (if (not-eq (bufget-f32 data 21) 0.0)
+        (setq wheel_diam (bufget-f32 data 21))
+    )
+    (if (not-eq (bufget-i8  data 25))
+        (setq batt_type (bufget-i8  data 25))
+    )
     (setq rec_fw_may      (bufget-i8  data 26))
     (setq rec_fw_min      (bufget-i8  data 27))
     (setq rec_lisp_may    (bufget-i8  data 28))
@@ -56,7 +64,6 @@
     (setq skate_fw_min    (bufget-i8  data 31))
     (setq distance        (bufget-f32  data 32))
 
-    (print poles)
     (free data)
 })
 
@@ -92,14 +99,15 @@
 
      (if (= counter val) {
          (gpio-configure-hold 20 1) ; latch the gpio_pin_20 before enter in light sleep mode
-         (sleep-light sleep_time)   ;turn off the radio(wifi,bt), enter in light sleep mode.
-           }
-       )
+         (if (= menu_index 0){
+            (sleep-light sleep_time)   ;turn off the radio(wifi,bt), enter in light sleep mode.
+         )}
+     })
      (if (> counter_1 val_1) {
          (wifi-start)
          (gpio-configure-hold 20 0) ;(gpio-hold-state 20 0)
          (setq counter   0.0)
          (setq counter_1 0.0)
-        })
+      })
 
 })

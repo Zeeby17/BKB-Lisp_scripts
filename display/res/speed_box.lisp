@@ -6,8 +6,10 @@
 (def speed_val 0.0)
 @const-start
 (defun speed_cal(){
-
-       (setq speed_val (*(* (/ (/ (abs rpm) poles) pulley) wheel_diam 0.18845)))
+    (if (and (not-eq poles 0) (not-eq pulley 0))
+        (setq speed_val (*(* (/ (/ (abs rpm) poles) pulley) wheel_diam 0.18845)))
+        (setq speed_val 0.0)
+    )
 
 })
 
