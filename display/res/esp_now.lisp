@@ -30,6 +30,13 @@
 (def val   1.0)
 (def val_1 0.0)
 (def sleep_time   140.0)
+(def pairing_status 0)
+(def pairing_key_T 64)
+(def pairing_key_R 0)
+(def signal_level 0)
+(def pair_source '(0 0 0 0 0 0))
+(def broadcast_add '(255 255 255 255 255 255))
+(def last_peer_packet 0.0)
 
 (defun esp_now_init(){
     (esp-now-start)
@@ -63,17 +70,23 @@
     (setq skate_fw_may    (bufget-i8  data 30))
     (setq skate_fw_min    (bufget-i8  data 31))
     (setq distance        (bufget-f32  data 32))
-
+    (setq pairing_key_R    (bufget-i8  data 36))
+    (setq pairing_status   (bufget-i8  data 37))
     (free data)
 })
 
 
 (defun proc-data (src des data rssi) {
-    (print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
-    (data_received data)
-    ;(setq mac-rx src)
-    (esp-now-add-peer peer)
+(print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
+    (setq pair_source src)
+    (setq signal_level rssi)
+    (setq pairing_key_R    (bufget-i8  data 36))
 
+    (if (eq src peer) {
+        (print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
+        (data_received data)
+        (setq last_peer_packet (systime))
+    })
 })
 
 (defun event-handler ()
@@ -90,6 +103,7 @@
      (bufset-f32 data_send 0 throttle      'little-endian); throttle
      (bufset-i8 data_send 4 direction     ); direction
      (bufset-i8 data_send 5 torq_mode     ); torque mode
+     (bufset-i8 data_send 6 pairing_key_T)
      (esp-now-send peer data_send)
 
      (setq counter (+ counter 1))

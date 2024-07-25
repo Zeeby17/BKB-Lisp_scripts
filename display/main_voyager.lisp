@@ -3,14 +3,16 @@
 (define THR_TIMEOUT 2.5) ; 5 for 160Mhz
 (def UNITS 0); 0--> imperial 1--> metric
 
+(def mac_0 0)
+(def mac_1 0)
+(def mac_2 0)
+(def mac_3 0)
+(def mac_4 0)
+(def mac_5 0)
 ; Un comment the mac to connect with
 ;(def peer '(255 255 255 255 255 255)) ; Mac broadcast for pairing
-;(def peer '(52 183 218 163 112 37)); Mac board n 1
-;(def peer '(52 183 218 163 97 241)); Mac board n 2
-;(def peer '(52 183 218 163 112 33)); Mac board n 3
-;(def peer '(52 183 218 163 111 253)); Mac board n 4
-;(def peer '(52 183 218 163 112 57)); Mac board n 5
-(def peer '(52 183 218 163 112 25)); Mac board n 9
+(def peer '(0 0 0 0 0 0));
+
 
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
@@ -38,6 +40,7 @@
 (import "res/eeprom_init.lisp" 'eeprom_init)
 (import "res/throttle.lisp" 'throttle)
 (import "res/esp_now.lisp" 'esp_now)
+(import "screens/pairing_screen.lisp" 'pairing_screen)
 (read-eval-program disp-text)
 (read-eval-program speed_box)
 (read-eval-program display_init)
@@ -58,17 +61,30 @@
 (read-eval-program eeprom_init)
 (read-eval-program throttle)
 (read-eval-program esp_now)
+(read-eval-program pairing_screen)
 
 
 
 ; display initialization
 (display_init)
-(print "Self mac" (get-mac-addr)) ; self mac address
+
 (def direction 1)
 (def menu_index 0)
 (def main_prescaler 0)
 (def torq_mode 0)
 (eeprom_init)
+
+;init mac and pair
+
+(print "Self mac" (get-mac-addr)) ; self mac address
+(setq mac_0 (to-i (eeprom-read-i pair0_add)))
+(setq mac_1 (to-i (eeprom-read-i pair1_add)))
+(setq mac_2 (to-i (eeprom-read-i pair2_add)))
+(setq mac_3 (to-i (eeprom-read-i pair3_add)))
+(setq mac_4 (to-i (eeprom-read-i pair4_add)))
+(setq mac_5 (to-i (eeprom-read-i pair5_add)))
+(setq peer (list mac_0 mac_1 mac_2 mac_3 mac_4 mac_5))
+(print "Peer mac" peer)
 (throttle_init)
 (setq torq_mode(eeprom-read-i torq_mode_add))
 (esp_now_init)
@@ -114,17 +130,16 @@
             (setq main_prescaler 0)
            )
 
-       (if (= throttle_status 1) {
-        (setq val_1 1.0) ; set this value when throttle is enabled
-        (setq sleep_time 0.12)
-        (data_send)
-         }
-         {
-         (setq val_1 5.0) ;5 , 20 ,17
-         (setq sleep_time 0.2) ; change the sleep time to get less power consumption
-         (data_send)
-         }
-           )
+        (if (= throttle_status 1) {
+            (setq val_1 1.0) ; set this value when throttle is enabled
+            (setq sleep_time 0.12)
+            (data_send)
+       }
+       {
+            (setq val_1 5.0) ;5 , 20 ,17
+            (setq sleep_time 0.2) ; change the sleep time to get less power consumption
+            (data_send)
+       })
        ; (sleep 0.006)
     })
 })

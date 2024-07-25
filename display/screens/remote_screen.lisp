@@ -20,18 +20,46 @@
             (txt-block-l text_box 1 0 0  font_9x14 "MAC address")
             (disp-render text_box (+ x_offset 1) (+ y_offset -1) '(0 0xFFFFFF))
             (img-clear text_box)
-                      
-            (txt-block-c numb_box 1 60 0  font_9x14 "xxx.xxx.xxx")
-            (txt-block-c numb_box 1 60 17  font_9x14 "xxx.xxx.xxx")
-            (disp-render numb_box (+ x_offset 4) (+ y_offset 17) '(0 0xFFFFFF))
-            (img-clear numb_box)
+            (def aux_mac 0)
 
-            (img-clear text_box_2)
-            (disp-render text_box_2 (+ x_offset 37) (+ y_offset 44) '(0 0xFFFFFF))
- 
+            (setq aux_mac(ix (get-mac-addr) 0))
+            (txt-block-l text_box 1 10 0  font_9x14  (str-from-n (to-i aux_mac) "%03d"))
+            (setq aux_mac(ix (get-mac-addr) 1))
+            (txt-block-c text_box 1 64 0  font_9x14  (str-from-n (to-i aux_mac) "%03d"))
+            (setq aux_mac(ix (get-mac-addr) 2))
+            (txt-block-l text_box 1 93 0  font_9x14  (str-from-n (to-i aux_mac) "%03d"))
+            (disp-render text_box (+ x_offset 0) (+ y_offset 17) '(0 0xFFFFFF))
+            (img-clear text_box)
+
+            (setq aux_mac(ix (get-mac-addr) 3))
+            (txt-block-l text_box 1 10 0  font_9x14  (str-from-n (to-i aux_mac) "%03d"))
+            (setq aux_mac(ix (get-mac-addr) 4))
+            (txt-block-c text_box 1 64 0  font_9x14  (str-from-n (to-i aux_mac) "%03d"))
+            (setq aux_mac(ix (get-mac-addr) 5))
+            (txt-block-l text_box 1 93 0  font_9x14  (str-from-n (to-i aux_mac) "%03d"))
+            (disp-render text_box (+ x_offset 0) (+ y_offset 32) '(0 0xFFFFFF))
+            (img-clear text_box)
 
         ))
         ((eq remote_screen_num 1) (progn
+            (txt-block-l text_box 1 0 0  font_9x14 "Pair MAC")
+            (disp-render text_box (+ x_offset 1) (+ y_offset -1) '(0 0xFFFFFF))
+            (img-clear text_box)
+
+            (txt-block-l text_box 1 10 0  font_9x14  (str-from-n (eeprom-read-i pair0_add) "%03d"))
+            (txt-block-c text_box 1 64 0  font_9x14  (str-from-n (eeprom-read-i pair1_add) "%03d"))
+            (txt-block-l text_box 1 93 0  font_9x14  (str-from-n (eeprom-read-i pair2_add) "%03d"))
+            (disp-render text_box (+ x_offset 0) (+ y_offset 17) '(0 0xFFFFFF))
+            (img-clear text_box)
+
+            (txt-block-l text_box 1 10 0  font_9x14  (str-from-n (eeprom-read-i pair3_add) "%03d"))
+            (txt-block-c text_box 1 64 0  font_9x14  (str-from-n (eeprom-read-i pair4_add) "%03d"))
+            (txt-block-l text_box 1 93 0  font_9x14  (str-from-n (eeprom-read-i pair5_add) "%03d"))
+            (disp-render text_box (+ x_offset 0) (+ y_offset 32) '(0 0xFFFFFF))
+            (img-clear text_box)
+
+        ))
+        ((eq remote_screen_num 2) (progn
             (txt-block-l text_box 1 0 0  font_9x14 "Units")
             (disp-render text_box (+ x_offset 1) (+ y_offset -1) '(0 0xFFFFFF))
             (img-clear text_box)
@@ -48,7 +76,7 @@
             (disp-render text_box_2 (+ x_offset 37) (+ y_offset 44) '(0 0xFFFFFF))
 
         ))
-        ((eq remote_screen_num 2) (progn
+        ((eq remote_screen_num 3) (progn
             (txt-block-l text_box 1 0 0  font_9x14 "total distance")
             (disp-render text_box (+ x_offset 1) (+ y_offset -1) '(0 0xFFFFFF))
             (img-clear text_box)
@@ -78,7 +106,9 @@
     (if (= cfg_pressed_short 1){
         (setq cfg_pressed_short 0)
         (setq remote_screen_num (+ remote_screen_num 1))
-        (if (> remote_screen_num 2)
+        (disp-render numb_box (+ x_offset 4) (+ y_offset 17) '(0 0xFFFFFF)); needed to clear the pixels
+        (disp-render text_box_2 (+ x_offset 47) (+ y_offset 44) '(0 0xFFFFFF)); needed to clear the pixels
+        (if (> remote_screen_num 3)
             (setq remote_screen_num 0)
         )
     }) 

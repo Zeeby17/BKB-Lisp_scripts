@@ -22,12 +22,13 @@
 ; distance Km
 
 (def can-id -1)
-;(def other-peer '(255 255 255 255 255 255))
+(def peer '())
+(def broadcast_add '(255 255 255 255 255 255))
 ;(def peer '(52 183 218 163 205 411)); Mac board n 1
 ;(def peer '(52 183 218 163 95 233)) ; Mac board n 2
 ;(def peer '(52 183 218 164 13 205)) ; Mac board n 3
 ;(def peer '(52 183 218 164 59 205)) ; Mac board n 4
-(def peer '(52 183 218 164 59 197)) ; Mac board n 5
+;(def peer '(52 183 218 164 59 197)) ; Mac board n 5
 ;(def peer '(52 183 218 164 10 141)) ; Mac board n 9
 (def mac-tx          '())
 (def set_cur         0.0)
@@ -41,9 +42,9 @@
 (def button_state    0.0)
 (def enable_throttle 0.0)
 (def I_motor         0.0)
-(def poles           0)
-(def pulley          0.0)
-(def wheel_diam      0.0)
+(def poles           14.0)
+(def pulley          2.66)
+(def wheel_diam      0.105)
 (def batt_type       0.0)
 (def rec_fw_may      0.0)
 (def rec_fw_min      0.0)
@@ -64,7 +65,20 @@
 (def flag_h      0)
 (def flag_s      0)
 (def first_start 1)
-
+(def is_data_received 0.0)
+(def store_mac  0)
+(def mac_0       0)
+(def mac_1       0)
+(def mac_2       0)
+(def mac_3       0)
+(def mac_4       0)
+(def mac_5       0)
+(def mac_aux    '())
+(def load_mac   0)
+(def cont 0)
+(def pairing_status 1)
+(def pairing_key    0)
+(def signal_level   0)
 
 ;TODO: List all can devices and check if the listed ID's belong to an ESC controller.
 ;it can be done through FW version, HW or so.
@@ -79,19 +93,18 @@
     (return can-id)
 })
 
-
 (defun data-received (data) {
 
      (setq throttle     (bufget-f32 data 0  'little-endian))
      (setq direction    (bufget-i8  data 4))
      (setq torq_mode    (bufget-i8  data 5)) ; torque mode
-
+     (setq pairing_key  (bufget-i8  data 6)) ; get the pairing key 67
 
  (if (>= FW_VERSION 6.05) {
        (rcode-run-noret can-id (list 'set-remote-state throttle 0 0 0  direction)) ; to use with FW 6.05+
      }
    {
-    (if (> throttle 0.0 ) {
+    (if (> throttle -0.03 ) {
         (if (= direction 1) (setq direction 1)(setq direction -1))
         (canset-current-rel can-id (* throttle direction))
        }
@@ -101,17 +114,14 @@
      )
    }
  )
-
-   (free data)
+ (free data)
   }
 )
 
 ;Parameters from ESC to be shown in the remote
 
 (defun data_to_send (data_send) {
-
-      (sleep 0.25)
-
+     ;(sleep 0.15)
       (setq rpm     (canget-rpm can-id))
       (setq vin     (canget-vin can-id))
       (setq temp    (canget-temp-fet can-id))
@@ -149,16 +159,62 @@
       (bufset-i8  data_send 31 skate_fw_min)
       (bufset-f32 data_send 32 distance)
 
+    (if (= pairing_key 64) {
+      (bufset-i8 data_send 36 127); sends 127 as pairing key
+      (bufset-i8 data_send 37 pairing_status) ; send connection status
       (esp-now-send mac-tx data_send)
+     }
+    )
   }
 )
 
 (defun proc-data (src des data rssi) {
-     ;(print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
-     (setq mac-tx src)
-     (data-received data)
-     (esp-now-add-peer mac-tx)
-   })
+    (print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
+
+    (setq is_data_received 1.0); to ensure when a data is received the ESP start sending
+
+    (if (eq des broadcast_add) {
+        (setq signal_level rssi)
+        (print "broadcasting")
+        (setq pairing_key    (bufget-i8  data 6))
+    })
+
+    (if (eq src mac-tx) {
+        (print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
+        (data-received data)
+    })
+
+    (setq cont (+ cont 1))
+
+    (if (< cont 10) {
+        (print "listening")
+     (if (and (= pairing_key 64)(> signal_level -40)) {
+
+        (eeprom-store-i 0 (ix src 0))
+        (eeprom-store-i 1 (ix src 1))
+        (eeprom-store-i 2 (ix src 2))
+        (eeprom-store-i 3 (ix src 3))
+        (eeprom-store-i 4 (ix src 4))
+        (eeprom-store-i 5 (ix src 5))
+
+        (eeprom-set-mac)
+        (setq mac-tx (list mac_0 mac_1 mac_2 mac_3 mac_4 mac_5)) ; desired mac for pairing
+        (print mac-tx)
+    }
+
+    { (eeprom-set-mac)    ; load a default mac address when time pairing is finished
+      (setq mac-tx (list mac_0 mac_1 mac_2 mac_3 mac_4 mac_5)) ;
+      (print "use default mac")
+      (print mac-tx)
+      (setq cont 0)
+    }
+   )
+  }
+ )
+    (print mac-tx)
+    (esp-now-add-peer mac-tx)
+ }
+)
 
 (defun event-handler ()
     (loopwhile t
@@ -168,15 +224,19 @@
 )))
 
 (defun main () {
-   ; (print "Self mac" (get-mac-addr))
+    (print "Self mac" (get-mac-addr))
     (setq can-id (scan-can-device can-id))
     (print "Can device:" can-id)
+
+    (print "Listening...")
     (esp-now-start)
-    (esp-now-add-peer peer)
+    (esp-now-add-peer broadcast_add)
+
     (event-register-handler (spawn event-handler))
     (event-enable 'event-esp-now-rx)
+
     (set-motor-torque)
-   ;(param-motor)
+    (param-motor)
     (loop-state)
   }
 )
@@ -225,6 +285,25 @@
   }
  )
 
+(defun eeprom-init-mac () {
+    (eeprom-store-i 0 255) ; here initialize MAC address, starts the pairing mode with a power cycle. The remote
+    (eeprom-store-i 1 255) ; needs to add the peer as broadcasting.
+    (eeprom-store-i 2 255)
+    (eeprom-store-i 3 255)
+    (eeprom-store-i 4 255)
+    (eeprom-store-i 5 255)
+    ; (eeprom-store-i 6 1) ; indicates that it is paired
+   }
+)
+
+(defun eeprom-set-mac() {
+    (setq mac_0 (to-i (eeprom-read-i 0)))
+    (setq mac_1 (to-i (eeprom-read-i 1)))
+    (setq mac_2 (to-i (eeprom-read-i 2)))
+    (setq mac_3 (to-i (eeprom-read-i 3)))
+    (setq mac_4 (to-i (eeprom-read-i 4)))
+    (setq mac_5 (to-i (eeprom-read-i 5)))
+})
 
 (defun set-motor-torque() {
 
@@ -262,9 +341,13 @@
 (defun loop-state () {
     (loopwhile-thd 50 t {
         (var data_send (bufcreate 55))
-        (data_to_send data_send)
+
+        (if (= is_data_received 1.0) {
+         (data_to_send data_send)
+         (setq is_data_received 0.0)
+         })
         (free data_send)
-        (sleep 0.2) ;0.2
+        (sleep 0.237)
     }
    )
   }
