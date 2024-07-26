@@ -233,7 +233,7 @@
             (setq distance (rcode-run can-id 0.1 '(get-dist-abs)))
         })
         (if (eq distance timeout) {
-            (print "dist:")(print distance)(setq distance aux) 
+            (print "dist:")(print distance)(setq distance aux)
         }
         {
             (setq aux distance)
@@ -329,7 +329,7 @@
      (setq flag_s 1) (setq flag_h 0)
       }
       )
-   (sleep 0.5)
+   (sleep 1)
     }
    )
   }
