@@ -136,8 +136,8 @@
             (data_send)
        }
        {
-            (setq val_1 5.0) ;5 , 20 ,17
-            (setq sleep_time 0.2) ; change the sleep time to get less power consumption
+            (setq val_1 1.0) ;5 , 20 ,17
+            (setq sleep_time 0.12) ; change the sleep time to get less power consumption
             (data_send)
        })
        ; (sleep 0.006)

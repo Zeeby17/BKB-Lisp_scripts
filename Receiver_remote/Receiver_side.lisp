@@ -128,21 +128,6 @@
       (setq speed   (canget-speed can-id))
       (setq I_motor (canget-current can-id))
 
-(if (>= FW_VERSION 6.05) {
-        (if (not-eq distance timeout) {
-               (setq distance (rcode-run can-id 0.1 '(get-dist-abs)))
-                 }
-             )
-         (if (eq distance timeout) {(print "dist:")(print distance)(setq distance aux)
-              }
-          {(setq aux distance)}
-            )
-          }
-          {
-           ;(setq distance (canget-dist can-id)) ; for version 6.00 is not absolute
-            }
-        )
-
       (bufset-f32 data_send 0 (+ rpm 0.01))
       (bufset-f32 data_send 4  vin)
       (bufset-f32 data_send 8  temp)
@@ -174,11 +159,10 @@
     (setq is_data_received 1.0); to ensure when a data is received the ESP start sending
 
     (if (eq des broadcast_add) {
-        (setq signal_level rssi)
         (print "broadcasting")
-        (setq pairing_key    (bufget-i8  data 6))
     })
-
+    (setq signal_level rssi)
+    (setq pairing_key    (bufget-i8  data 6))
     (if (eq src mac-tx) {
         (print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
         (data-received data)
@@ -244,7 +228,20 @@
 ; all motor info or esc info could be added in this thread
 (defun param-motor () {
     (loopwhile-thd 60 t {
-
+    (if (>= FW_VERSION 6.05) {
+        (if (not-eq distance timeout) {
+            (setq distance (rcode-run can-id 0.1 '(get-dist-abs)))
+        })
+        (if (eq distance timeout) {
+            (print "dist:")(print distance)(setq distance aux) 
+        }
+        {
+            (setq aux distance)
+        })
+    }
+    {
+        (setq distance (canget-dist can-id)) ; for version 6.00 is not absolute
+    })
    (if (>= FW_VERSION 6.05) {
       (if (not-eq poles timeout) {
             (setq poles (rcode-run can-id 0.1 '(conf-get 'si-motor-poles)))
