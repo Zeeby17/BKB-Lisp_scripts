@@ -60,7 +60,7 @@
     (if (not-eq (bufget-f32 data 21) 0.0)
         (setq wheel_diam (bufget-f32 data 21))
     )
-    (if (not-eq (bufget-i8  data 25))
+    (if (not-eq (bufget-i8  data 25) 0)
         (setq batt_type (bufget-i8  data 25))
     )
     (setq rec_fw_may      (bufget-i8  data 26))
@@ -77,7 +77,7 @@
 
 
 (defun proc-data (src des data rssi) {
-(print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
+
     (setq pair_source src)
     (setq signal_level rssi)
     (setq pairing_key_R    (bufget-i8  data 36))

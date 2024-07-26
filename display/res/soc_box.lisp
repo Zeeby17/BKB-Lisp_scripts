@@ -28,15 +28,9 @@
 (defun bat_soc (soc min max porc_volt rem_sk px py){
     (def soc_aux 0)
     (setq soc (m-trunc soc min max))
-    (setq soc_aux (* soc 10))
     (setq prescaler (+ prescaler 1))
 
-    (if(and (and (= rem_sk 1) (= porc_volt 0)) (= (isCharging) 0))
-        (setq bar_val (utils_map (* soc 10) (* min 10) (* max 10) 1 39))
-        (setq bar_val (utils_map soc min max 1 39))
-    )
-
-    (if(and (= rem_sk 0) (= porc_volt 0))
+    (if(= porc_volt 0)
         (setq bar_val (utils_map (* soc 10) (* min 10) (* max 10) 1 39))
         (setq bar_val (utils_map soc min max 1 39))
     )
