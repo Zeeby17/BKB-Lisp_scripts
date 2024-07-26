@@ -21,7 +21,7 @@
         (img-clear text_box)
         
         (txt-block-c text_box 1 40 0  font_9x14 "NEXT")
-        (disp-render text_box (+ x_offset 70) (+ y_offset 53) '(0 0xFFFFFF))
+        ;(disp-render text_box (+ x_offset 70) (+ y_offset 53) '(0 0xFFFFFF))
         (img-clear text_box) 
         
         (txt-block-l text_box 1 0 0  font_9x14 "Fw:")
@@ -98,13 +98,13 @@
         ))
     )
 
-    (if (= cfg_pressed_short 1){
-        (setq cfg_pressed_short 0)
-        (setq info_screen_num (+ info_screen_num 1))
-        (if (> info_screen_num 2)
-            (setq info_screen_num 0)
-        )
-    }) 
+;    (if (= cfg_pressed_short 1){
+;        (setq cfg_pressed_short 0)
+;        (setq info_screen_num (+ info_screen_num 1))
+;        (if (> info_screen_num 2)
+;            (setq info_screen_num 0)
+;        )
+;    })
     
     (if (= on_pressed_short 1){
         (setq on_pressed_short 0) 
