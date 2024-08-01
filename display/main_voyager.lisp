@@ -65,6 +65,7 @@
 
 
 
+
 ; display initialization
 (display_init)
 
@@ -72,6 +73,7 @@
 (def menu_index 0)
 (def main_prescaler 0)
 (def torq_mode 0)
+(def data_rate 0.0)
 (eeprom_init)
 
 ;init mac and pair
@@ -86,7 +88,8 @@
 (setq peer (list mac_0 mac_1 mac_2 mac_3 mac_4 mac_5))
 (print "Peer mac" peer)
 (throttle_init)
-(setq torq_mode(eeprom-read-i torq_mode_add))
+(setq torq_mode (eeprom-read-i torq_mode_add))
+(setq data_rate (eeprom-read-f 12))
 (esp_now_init)
 ; display thread
 (defun display_th(){
@@ -132,12 +135,12 @@
 
         (if (= throttle_status 1) {
             (setq val_1 1.0) ; set this value when throttle is enabled
-            (setq sleep_time 0.12)
+            (setq sleep_time data_rate)
             (data_send)
        }
        {
             (setq val_1 1.0) ;5 , 20 ,17
-            (setq sleep_time 0.12) ; change the sleep time to get less power consumption
+            (setq sleep_time data_rate) ; change the sleep time to get less power consumption
             (data_send)
        })
        ; (sleep 0.006)

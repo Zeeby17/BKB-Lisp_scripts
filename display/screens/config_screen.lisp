@@ -17,14 +17,13 @@
         (txt-block-l text_box 1 0 0  font_9x14 "ENTER")
         (disp-render text_box (+ x_offset 80) (+ y_offset 53) '(0 0xFFFFFF))
         (img-clear text_box)
-        
+
         (setq firts_iteration 1)
-           
+
     })
 
-    
     (cond
-        ((eq menu_sub_index 0) 
+        ((eq menu_sub_index 0)
             (progn
                 (if(= enter_menu 0){
                     (txt-block-c title_box 1 64 0  font_20x30 "CALIB")
@@ -34,15 +33,15 @@
                         (setq cfg_pressed_short 0)
                         (setq cfg_pressed_long 0)
                         (disp-clear)
-                        (setq enter_menu 1)                       
-                    })            
+                        (setq enter_menu 1)
+                    })
                 }
-                { 
+                {
                 (calib_screen)
                 })
-   
+
         ))
-        ((eq menu_sub_index 2) 
+        ((eq menu_sub_index 2)
         (progn
             (if(= enter_menu 0){
                 (txt-block-c title_box 1 64 0  font_20x30 "SYSTEM")
@@ -52,15 +51,15 @@
                     (setq cfg_pressed_short 0)
                     (setq cfg_pressed_long 0)
                     (disp-clear)
-                    (setq enter_menu 1)                       
-                 })            
+                    (setq enter_menu 1)
+                 })
              }
-             { 
+             {
              (info_screen)
              })
-   
+
           ))
-         ((eq menu_sub_index 1) 
+         ((eq menu_sub_index 1)
          (progn
             (if(= enter_menu 0){
                 (txt-block-c title_box 1 64 0  font_20x30 "ESK8")
@@ -70,14 +69,14 @@
                     (setq cfg_pressed_short 0)
                     (setq cfg_pressed_long 0)
                     (disp-clear)
-                    (setq enter_menu 1)                       
-                 })            
+                    (setq enter_menu 1)
+                 })
              }
-             { 
+             {
              (esk8_screen)
              })
          ))
-         ((eq menu_sub_index 3) 
+         ((eq menu_sub_index 3)
          (progn
             (if(= enter_menu 0){
                 (txt-block-c title_box 1 64 0  font_20x30 "REMOTE")
@@ -87,10 +86,10 @@
                     (setq cfg_pressed_short 0)
                     (setq cfg_pressed_long 0)
                     (disp-clear)
-                    (setq enter_menu 1)                       
-                 })            
+                    (setq enter_menu 1)
+                 })
              }
-             { 
+             {
              (remote_screen)
              })
           ))
@@ -112,31 +111,31 @@
              })
           ))
     )
-    
+
     (setq thum_stick_prescaler (+ thum_stick_prescaler 1))
     (if (and (> thum_stick_prescaler 10) (= enter_menu 0)){
-        (if(< (get-adc 0) 0.8){     
+        (if(< (get-adc 0) 0.8){
             (setq menu_sub_index (+ menu_sub_index 1))
             (if (> menu_sub_index menu_count) {
                 (setq menu_sub_index 0)
             })
         })
-    
-        (if(> (get-adc 0) 2){     
+
+        (if(> (get-adc 0) 2){
             (setq menu_sub_index (- menu_sub_index 1))
             (if (< menu_sub_index 0) {
                 (setq menu_sub_index menu_count)
             })
         })
-        (setq thum_stick_prescaler 0) 
+        (setq thum_stick_prescaler 0)
     })
-    
+
     (if (= on_pressed_short 1){
-        (setq on_pressed_short 0) 
+        (setq on_pressed_short 0)
         (disp-clear)
         (setq firts_iteration 0)
         (setq menu_sub_index 0)
         (setq menu_index 0)
-    }) 
+    })
 })
 @const-end

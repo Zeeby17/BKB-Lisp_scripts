@@ -89,7 +89,7 @@
         (setq peer (list mac_0 mac_1 mac_2 mac_3 mac_4 mac_5))
         (esp-now-add-peer peer)
 
-     })       
+     })
 
      (if (= cfg_pressed_long 1){
         (setq cfg_pressed_long 0)
@@ -107,7 +107,7 @@
         (setq enter_menu 0)
         (setq firts_iteration_pair 0)
 
-     })  
+     })
 })
 
 

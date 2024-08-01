@@ -10,14 +10,15 @@
 (define pair3_add 9)
 (define pair4_add 10)
 (define pair5_add 11)
+(define data_index 12)
 
 (defun eeprom_init(){
 
     (setq test_value (to-i (eeprom-read-i 32)))
     (if(not-eq test_value 0xFFFF){
             (print "memoty not initialized, writing default values")
-            (eeprom-store-i 1 20)    
-            (eeprom-store-i 2 2048)  
+            (eeprom-store-i 1 20)
+            (eeprom-store-i 2 2048)
             (eeprom-store-i 3 4076)
             (eeprom-store-i 4 1)
             (eeprom-store-f 5 0.0)
@@ -27,6 +28,8 @@
             (eeprom-store-i 9 0)
             (eeprom-store-i 10 0)
             (eeprom-store-i 11 0)
+            (eeprom-store-f 12 0.13)
             (eeprom-store-i 32 0xFFFF)
+
     })
 )}

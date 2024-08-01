@@ -112,14 +112,16 @@
      (free data_send)
 
      (if (= counter val) {
-         (gpio-configure-hold 20 1) ; latch the gpio_pin_20 before enter in light sleep mode
+         (gpio-hold 20 1) ; latch the gpio_pin_20 before enter in light sleep mode
+         (gpio-hold-deepsleep 1)
          (if (= menu_index 0){
             (sleep-light sleep_time)   ;turn off the radio(wifi,bt), enter in light sleep mode.
          )}
      })
      (if (> counter_1 val_1) {
          (wifi-start)
-         (gpio-configure-hold 20 0) ;(gpio-hold-state 20 0)
+         (gpio-hold 20 0)
+         (gpio-hold-deepsleep 0)
          (setq counter   0.0)
          (setq counter_1 0.0)
       })

@@ -24,12 +24,6 @@
 (def can-id -1)
 (def peer '())
 (def broadcast_add '(255 255 255 255 255 255))
-;(def peer '(52 183 218 163 205 411)); Mac board n 1
-;(def peer '(52 183 218 163 95 233)) ; Mac board n 2
-;(def peer '(52 183 218 164 13 205)) ; Mac board n 3
-;(def peer '(52 183 218 164 59 205)) ; Mac board n 4
-;(def peer '(52 183 218 164 59 197)) ; Mac board n 5
-;(def peer '(52 183 218 164 10 141)) ; Mac board n 9
 (def mac-tx          '())
 (def set_cur         0.0)
 (def data (bufcreate 40))
@@ -344,7 +338,7 @@
          (setq is_data_received 0.0)
          })
         (free data_send)
-        (sleep 0.237)
+        (sleep 0.23) ; 0.237
     }
    )
   }
