@@ -2,7 +2,7 @@
 ;it is necessary to install the code-server. code-server allows the execution of
 ;other functionalities that are not implemented in 6.00 version.
 (sleep 10)
-(def FW_VERSION 6.00)
+(def FW_VERSION 6.05)
 
 (if (>= FW_VERSION 6.05){
 (import "pkg@://vesc_packages/lib_code_server/code_server.vescpkg" 'code-server)
@@ -73,17 +73,56 @@
 (def pairing_status 1)
 (def pairing_key    0)
 (def signal_level   0)
-
+(def throttle_ppm 0.0)
+(def throttle_dead_band 0.0)
+(def dead 0.0)
+(def ppm_input 0.0)
+(def ppm_status 0.0)
+(def ppm_config 0.0)
+(def no_app_config 0.0)
+(def can_enabled 0)
 ;TODO: List all can devices and check if the listed ID's belong to an ESC controller.
 ;it can be done through FW version, HW or so.
 ;define a master ESC in case a dual controller is connected.
 ;Could be defined with the esc which has connected the receiver.
 
+(defun utils_map(x in_min in_max out_min out_max)
+(/ (* (- x in_min) (- out_max out_min)) (+ (- in_max in_min) out_min))
+)
+
+(defun dead_band(value tres max)
+(if (< (abs value) tres) {
+      (setq value 0.0)
+    }
+    {(setq dead (/ max (- max tres)))
+      (if (> value 0.0)
+            (setq value (+ (* dead value) (* max (- 1.0 dead))))
+            (setq value (* -1.0 (+ (* dead (* -1.0 value)) (* max (- 1.0 dead)))))
+      )
+     }
+    )
+  (return value)
+ )
+
+(defun ppm-start(freq duty chan pin res) {
+  (pwm-start freq duty chan pin res); for PPM functionality
+})
+
+(defun utils_truncate ( pwr min max)
+ (progn
+  (cond ((> pwr max) (setq Throttle_ppm max))
+        ((< pwr min) (setq Throttle_ppm min))
+  )
+ )
+)
+
 (defunret scan-can-device (can-id) { ;
     (if (< can-id 0) {
         (var can-devices (can-scan))
+        (print can-devices)
         (setq can-id (first (can-scan)))
     })
+   ; (can-cmd can-id "(conf-set 'can-status-msgs-r1 0x3F )") ; set the CAN msg status that will be shown in the remote.
     (return can-id)
 })
 
@@ -93,21 +132,41 @@
      (setq direction    (bufget-i8  data 4))
      (setq torq_mode    (bufget-i8  data 5)) ; torque mode
      (setq pairing_key  (bufget-i8  data 6)) ; get the pairing key 67
+     (setq ppm_status   (bufget-i8  data 7)) ; get the ppm mode.
+     (print throttle)
+     (print ppm_status)
 
- (if (>= FW_VERSION 6.05) {
-       (rcode-run-noret can-id (list 'set-remote-state throttle 0 0 0  direction)) ; to use with FW 6.05+
+
+     (setq throttle_ppm (utils_map throttle -1.0 1.0 0.0 1.0))
+    ; (print throttle_ppm)
+     (utils_truncate throttle_ppm 0.1 0.97) ; truncate the values for the throttle ppm
+     (setq throttle_dead_band (dead_band throttle 0.2 1.0))
+     ;(print throttle_dead_band)
+
+     (if (eq ppm_status 1) {
+     (pwm-set-duty throttle_ppm 0)
+     (setq no_app_config 0.0)
      }
-   {
-    (if (> throttle -0.03 ) {
+     {
+    (if (eq no_app_config 0.0) {(can-cmd can-id "(conf-set 'app-to-use 0)")(setq no_app_config 1.0)})
+
+     (if (>= FW_VERSION 6.05) {
+        (rcode-run-noret can-id (list 'set-remote-state throttle 0 0 0  direction)) ; to use with FW 6.05+
+    }
+    {
+    (if (> throttle_dead_band 0.2 ) {
         (if (= direction 1) (setq direction 1)(setq direction -1))
-        (canset-current-rel can-id (* throttle direction))
-       }
-      {
-        (canset-brake-rel can-id throttle)
-       }
-     )
-   }
- )
+            (canset-current-rel can-id (* throttle_dead_band direction))
+        }
+        {
+        (if (and (< throttle_dead_band 0.2)(> throttle_dead_band -0.2))
+            {(canset-current-rel can-id 0.0)})}
+        )
+    (if(< throttle_dead_band -0.2) {
+       (canset-brake-rel can-id throttle_dead_band)
+      })
+    })
+   })
  (free data)
   }
 )
@@ -115,12 +174,14 @@
 ;Parameters from ESC to be shown in the remote
 
 (defun data_to_send (data_send) {
-     ;(sleep 0.15)
+
+       (if (eq ppm_status 0) {
       (setq rpm     (canget-rpm can-id))
       (setq vin     (canget-vin can-id))
       (setq temp    (canget-temp-fet can-id))
       (setq speed   (canget-speed can-id))
       (setq I_motor (canget-current can-id))
+      })
 
       (bufset-f32 data_send 0 (+ rpm 0.01))
       (bufset-f32 data_send 4  vin)
@@ -141,6 +202,7 @@
     (if (= pairing_key 64) {
       (bufset-i8 data_send 36 127); sends 127 as pairing key
       (bufset-i8 data_send 37 pairing_status) ; send connection status
+      (print data_send)
       (esp-now-send mac-tx data_send)
      }
     )
@@ -165,7 +227,7 @@
     (setq cont (+ cont 1))
 
     (if (< cont 10) {
-        (print "listening")
+       ; (print "listening")
      (if (and (= pairing_key 64)(> signal_level -40)) {
 
         (eeprom-store-i 0 (ix src 0))
@@ -203,9 +265,8 @@
 
 (defun main () {
     (print "Self mac" (get-mac-addr))
-    (setq can-id (scan-can-device can-id))
+    (setq can-id (scan-can-device can-id)) ; when ppm is enabled just use
     (print "Can device:" can-id)
-
     (print "Listening...")
     (esp-now-start)
     (esp-now-add-peer broadcast_add)
@@ -213,6 +274,7 @@
     (event-register-handler (spawn event-handler))
     (event-enable 'event-esp-now-rx)
 
+    (ppm-start 50 throttle_ppm 0 21 13)
     (set-motor-torque)
     (param-motor)
     (loop-state)
@@ -222,6 +284,7 @@
 ; all motor info or esc info could be added in this thread
 (defun param-motor () {
     (loopwhile-thd 60 t {
+  (if (eq ppm_status 0) {
     (if (>= FW_VERSION 6.05) {
         (if (not-eq distance timeout) {
             (setq distance (rcode-run can-id 0.1 '(get-dist-abs)))
@@ -270,6 +333,7 @@
             )
          }
        )
+       })
      (sleep 1.0)
     }
    )
@@ -299,6 +363,8 @@
 (defun set-motor-torque() {
 
     (loopwhile-thd 50 t {
+
+     (if (eq ppm_status 0) {
      (if (and (= torq_mode 0.0) (= flag_l 0)) {
    ;  (rcode-run-noret can-id  '(conf-set 'l-current-max-scale 0.25)) ; 0.15
       (can-cmd can-id (str-from-n 0.25 "(conf-set 'l-current-max-scale %.2f)"))
@@ -323,7 +389,8 @@
      (setq flag_s 1) (setq flag_h 0)
       }
       )
-   (sleep 1)
+     })
+   (sleep 1.0)
     }
    )
   }
@@ -332,18 +399,19 @@
 (defun loop-state () {
     (loopwhile-thd 50 t {
         (var data_send (bufcreate 55))
-
         (if (= is_data_received 1.0) {
          (data_to_send data_send)
          (setq is_data_received 0.0)
+         }
+         {(print "No data")
+          (pwm-set-duty 0.49 0) ; set the duty cycle to 50% just to ensure when data is lost the motor stops
          })
         (free data_send)
-        (sleep 0.23) ; 0.237
-    }
-   )
+        (sleep 0.237) ; 0.237
+       }
+     )
   }
- )
-
+)
 
 ;starts from here
 (main)

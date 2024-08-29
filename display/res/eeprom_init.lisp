@@ -28,7 +28,8 @@
             (eeprom-store-i 9 0)
             (eeprom-store-i 10 0)
             (eeprom-store-i 11 0)
-            (eeprom-store-f 12 0.13)
+            (eeprom-store-f 12 0.06); default data rate
+            (eeprom-store-i 13 0) ; ppm status
             (eeprom-store-i 32 0xFFFF)
 
     })

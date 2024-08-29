@@ -104,6 +104,7 @@
      (bufset-i8 data_send 4 direction     ); direction
      (bufset-i8 data_send 5 torq_mode     ); torque mode
      (bufset-i8 data_send 6 pairing_key_T)
+     (bufset-i8 data_send 7 ppm_status); send the ppm status
      (esp-now-send peer data_send)
 
      (setq counter (+ counter 1))

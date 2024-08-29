@@ -89,7 +89,8 @@
 (print "Peer mac" peer)
 (throttle_init)
 (setq torq_mode (eeprom-read-i torq_mode_add))
-(setq data_rate (eeprom-read-f 12))
+(setq data_rate (eeprom-read-f 12)) ; load default data rate value
+(setq ppm_status (to-i(eeprom-read-i 13))); load default ppm state value
 (esp_now_init)
 ; display thread
 (defun display_th(){

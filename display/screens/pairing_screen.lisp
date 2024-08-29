@@ -26,7 +26,7 @@
         (setq firts_iteration_pair 1)
      })
 
-     (if (and (= pairing_key_R 127) (> signal_level -40)){
+     (if (and (= pairing_key_R 127) (> signal_level -60)){
         (txt-block-l text_box 1 0 0  font_9x14 "Pair found!")
         (disp-render text_box (+ x_offset 1) (+ y_offset 1) '(0 0xFFFFFF))
         (img-clear text_box)
