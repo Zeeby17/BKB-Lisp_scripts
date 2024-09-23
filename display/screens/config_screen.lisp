@@ -113,7 +113,7 @@
     )
 
     (setq thum_stick_prescaler (+ thum_stick_prescaler 1))
-    (if (and (> thum_stick_prescaler 10) (= enter_menu 0)){
+    (if (and (> thum_stick_prescaler 5) (= enter_menu 0)){
         (if(< (get-adc 0) 0.8){
             (setq menu_sub_index (+ menu_sub_index 1))
             (if (> menu_sub_index menu_count) {

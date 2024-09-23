@@ -72,6 +72,7 @@
 (def cont 0)
 (def pairing_status 1)
 (def pairing_key    0)
+(def data_rate 0.01)
 (def signal_level   0)
 (def throttle_ppm 0.0)
 (def throttle_dead_band 0.0)
@@ -122,7 +123,9 @@
         (print can-devices)
         (setq can-id (first (can-scan)))
     })
-   ; (can-cmd can-id "(conf-set 'can-status-msgs-r1 0x3F )") ; set the CAN msg status that will be shown in the remote.
+    (if (eq ppm_status 0) {
+    (can-cmd can-id "(conf-set 'can-status-msgs-r1 0x3F )") ; set the CAN msg status that will be shown in the remote.
+    })
     (return can-id)
 })
 
@@ -133,9 +136,10 @@
      (setq torq_mode    (bufget-i8  data 5)) ; torque mode
      (setq pairing_key  (bufget-i8  data 6)) ; get the pairing key 67
      (setq ppm_status   (bufget-i8  data 7)) ; get the ppm mode.
+     ;(setq data_rate    (bufget-f32 data 8)) ; data_rate from remote to sync to the receiver
      (print throttle)
      (print ppm_status)
-
+   ;  (print data_rate)
 
      (setq throttle_ppm (utils_map throttle -1.0 1.0 0.0 1.0))
     ; (print throttle_ppm)
@@ -198,10 +202,12 @@
       (bufset-i8  data_send 30 skate_fw_may)
       (bufset-i8  data_send 31 skate_fw_min)
       (bufset-f32 data_send 32 distance)
-
-    (if (= pairing_key 64) {
       (bufset-i8 data_send 36 127); sends 127 as pairing key
       (bufset-i8 data_send 37 pairing_status) ; send connection status
+
+    (if (= pairing_key 64) { ;64
+   ;   (bufset-i8 data_send 36 127); sends 127 as pairing key
+   ;   (bufset-i8 data_send 37 pairing_status) ; send connection status
       (print data_send)
       (esp-now-send mac-tx data_send)
      }
@@ -228,7 +234,7 @@
 
     (if (< cont 10) {
        ; (print "listening")
-     (if (and (= pairing_key 64)(> signal_level -40)) {
+     (if (and (= pairing_key 64)(> signal_level -80)) {
 
         (eeprom-store-i 0 (ix src 0))
         (eeprom-store-i 1 (ix src 1))
@@ -407,9 +413,10 @@
           (pwm-set-duty 0.49 0) ; set the duty cycle to 50% just to ensure when data is lost the motor stops
          })
         (free data_send)
-        (sleep 0.237) ; 0.237
-       }
-     )
+        ; (sleep (+ data_rate 0.2)) ; 0.237  ; for data rate=30ms (50ms(on)+50ms(off)+datarate)=130ms
+        (sleep 0.03)
+       }                                     ; for data rate=60ms (50ms(on)+50ms(off)+datarate)=160ms
+     )                         ;for data rate=100ms (50ms(on)+50ms(off)+datarate)=200ms
   }
 )
 

@@ -162,7 +162,7 @@
                     (disp-render text_box (+ x_offset 10) (+ y_offset 18) '(0 0xFFFFFF))
                 })
 
-                (if  (> (get-adc-raw) 3000){
+                (if  (> (get-adc-raw) 3000){ ;3000
                      (sleep 0.1)
                      (def text_box (img-buffer 'indexed2 115 14))
                      (txt-block-l text_box 1 10 0  font_9x14  "ENABLE")
@@ -170,7 +170,7 @@
                      (img-clear text_box)
                      (setq ppm_status 1.0)
                 })
-                (if (and (< (get-adc-raw) 1000) (> date_aux 0.031)){
+                (if (< (get-adc-raw) 2000){ ; 1000, 0.031
                     (sleep 0.1)
                     (def text_box (img-buffer 'indexed2 115 14))
                     (txt-block-l text_box 1 10 0  font_9x14  "DISABLE")

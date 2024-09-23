@@ -111,17 +111,16 @@
             (off_sequence)
         })
 
-
         ; change direction
-        (if (> main_prescaler 10){
-            (if (and (= cfg_pressed_short 1) (< (get-adc-raw) (+ (eeprom-read-i min_cal_add) 20))){
+        (if (> main_prescaler 5){
+            (if (and (= cfg_pressed_short 1) (< (get-adc-raw) (+ (eeprom-read-i min_cal_add) 80))){
                 (if(= direction 1)
                     (setq direction 0)
                     (setq direction 1)
                 )
             })
 
-            (if (and (= on_pressed_short 1) (< (get-adc-raw) (+ (eeprom-read-i min_cal_add) 20))){
+            (if (and (= on_pressed_short 1) (< (get-adc-raw) (+ (eeprom-read-i min_cal_add) 80))){
                 (setq torq_mode (+ torq_mode 1))
                 (if(> torq_mode 3)
                     (setq torq_mode 0)
@@ -130,9 +129,9 @@
             })
         })
 
-        (if (> main_prescaler 10)
-            (setq main_prescaler 0)
-           )
+      ;  (if (> main_prescaler 10)
+      ;      (setq main_prescaler 0)
+      ;     )
 
         (if (= throttle_status 1) {
             (setq val_1 1.0) ; set this value when throttle is enabled
@@ -144,7 +143,11 @@
             (setq sleep_time data_rate) ; change the sleep time to get less power consumption
             (data_send)
        })
-       ; (sleep 0.006)
+
+          (if (> main_prescaler 5)
+            (setq main_prescaler 0)
+           )
+
     })
 })
 
