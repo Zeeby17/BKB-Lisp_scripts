@@ -17,6 +17,7 @@
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
 (import "pkg::disp-text@://vesc_packages/lib_disp_ui/disp_ui.vescpkg" 'disp-text)
 (import "res/BKB_LOGO.jpg" 'logo)
+(import "res/CUSTOM_LOGO.jpg" 'logo_custom)
 (import "res/display_init.lisp" 'display_init)
 (import "res/soc_box.lisp" 'soc_box)
 (import "fonts/font_9x14.bin" font_9x14)
