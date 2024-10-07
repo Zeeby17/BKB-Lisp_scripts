@@ -82,6 +82,7 @@
 (def ppm_config 0.0)
 (def no_app_config 0.0)
 (def can_enabled 0)
+(def start_time 0)
 ;TODO: List all can devices and check if the listed ID's belong to an ESC controller.
 ;it can be done through FW version, HW or so.
 ;define a master ESC in case a dual controller is connected.
@@ -117,6 +118,24 @@
  )
 )
 
+(defun ppm-send (setpoint time-out) {
+
+        (setq secs (secs-since time))
+        (setq last_time (- secs time))
+
+        (if (<= time-out last_time) {
+                (setq time (secs-since secs))
+                (pwm-set-duty 0.48 0)
+            }
+
+          {
+
+          (pwm-set-duty setpoint 0)
+        }
+      )
+    }
+ )
+
 (defunret scan-can-device (can-id) { ;
     (if (< can-id 0) {
         (var can-devices (can-scan))
@@ -139,7 +158,6 @@
      ;(setq data_rate    (bufget-f32 data 8)) ; data_rate from remote to sync to the receiver
      (print throttle)
      (print ppm_status)
-   ;  (print data_rate)
 
      (setq throttle_ppm (utils_map throttle -1.0 1.0 0.0 1.0))
     ; (print throttle_ppm)
@@ -148,8 +166,9 @@
      ;(print throttle_dead_band)
 
      (if (eq ppm_status 1) {
-     (pwm-set-duty throttle_ppm 0)
-     (setq no_app_config 0.0)
+     (ppm-send throttle_ppm 1.6) ; a timeout time to test the function.
+
+      (setq no_app_config 0.0)
      }
      {
     (if (eq no_app_config 0.0) {(can-cmd can-id "(conf-set 'app-to-use 0)")(setq no_app_config 1.0)})
@@ -407,14 +426,17 @@
         (var data_send (bufcreate 55))
         (if (= is_data_received 1.0) {
          (data_to_send data_send)
-         (setq is_data_received 0.0)
+        (setq is_data_received 0.0)
+
          }
-         {(print "No data")
-          (pwm-set-duty 0.49 0) ; set the duty cycle to 50% just to ensure when data is lost the motor stops
-         })
+         {
+           ;(print "NO_DATA")
+           ;(pwm-set-duty 0.48 0)
+            }
+       )
         (free data_send)
         ; (sleep (+ data_rate 0.2)) ; 0.237  ; for data rate=30ms (50ms(on)+50ms(off)+datarate)=130ms
-        (sleep 0.03)
+        (sleep 0.1)
        }                                     ; for data rate=60ms (50ms(on)+50ms(off)+datarate)=160ms
      )                         ;for data rate=100ms (50ms(on)+50ms(off)+datarate)=200ms
   }
