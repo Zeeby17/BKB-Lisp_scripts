@@ -38,6 +38,7 @@
 (def broadcast_add '(255 255 255 255 255 255))
 (def last_peer_packet 0.0)
 (def is_data_received 0)
+(def batt_saver)
 
 (defun esp_now_init(){
     (esp-now-start)
@@ -86,7 +87,7 @@
     (setq pairing_key_R    (bufget-i8  data 36))
 
     (if (eq src peer) {
-        (print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
+        ;(print (list "src:" src  "des:" des "data:" data "rssi:" rssi))
         (data_received data)
         (setq last_peer_packet (systime))
     })
@@ -110,27 +111,24 @@
      (bufset-i8 data_send 7 ppm_status); send the ppm status
     ; (bufset-i8 data_send 8 data_rate); send the sleep info, a timing that will be used to sync the receiver.
 
-     (setq counter (+ counter 1))
-     (setq counter_1 (+ counter_1 1))
 
-     (if (= counter val) {
-         (gpio-hold 20 1) ; latch the gpio_pin_20 before enter in light sleep mode
-         (gpio-hold-deepsleep 1)
-         (print pairing_status)
-         (if (= menu_index 0){
-             (sleep-light sleep_time)   ;turn off the radio(wifi,bt), enter in light sleep mode.
-         })
+    (if (= batt_saver 1){
+        (if (= menu_index 0){
+            (gpio-hold 20 1) ; latch the gpio_pin_20 before enter in light sleep mode
+            (gpio-hold-deepsleep 1)
+            (sleep-light sleep_time)   ;turn off the radio(wifi,bt), enter in light sleep mode.                 
+            (sleep 0.01)
+            (wifi-start)
+            (gpio-hold 20 0)
+            (gpio-hold-deepsleep 0)
+
+         })            
+     }
+     {
+        (sleep 0.01)
      })
-     (if (> counter_1 val_1) {
-         (wifi-start)
-         (gpio-hold 20 0)
-         (gpio-hold-deepsleep 0)
-         (setq counter   0.0)
-         (setq counter_1 0.0)
-      })
 
      (esp-now-send peer data_send)
      (free data_send)
-
 
 })

@@ -11,6 +11,8 @@
 (define pair4_add 10)
 (define pair5_add 11)
 (define data_index 12)
+(define ppm_status_add 13)
+(define batt_saver_add 14)
 
 (defun eeprom_init(){
 
@@ -30,6 +32,7 @@
             (eeprom-store-i 11 0)
             (eeprom-store-f 12 0.06); default data rate
             (eeprom-store-i 13 0) ; ppm status
+            (eeprom-store-i 14 0)
             (eeprom-store-i 32 0xFFFF)
 
     })

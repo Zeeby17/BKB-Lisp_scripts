@@ -42,6 +42,7 @@
 (import "res/throttle.lisp" 'throttle)
 (import "res/esp_now.lisp" 'esp_now)
 (import "screens/pairing_screen.lisp" 'pairing_screen)
+(import "screens/batt_save_screen.lisp" 'battery_saver_screen)
 (read-eval-program disp-text)
 (read-eval-program speed_box)
 (read-eval-program display_init)
@@ -63,9 +64,7 @@
 (read-eval-program throttle)
 (read-eval-program esp_now)
 (read-eval-program pairing_screen)
-
-
-
+(read-eval-program battery_saver_screen)
 
 ; display initialization
 (display_init)
@@ -92,6 +91,7 @@
 (setq torq_mode (eeprom-read-i torq_mode_add))
 (setq data_rate (eeprom-read-f 12)) ; load default data rate value
 (setq ppm_status (to-i(eeprom-read-i 13))); load default ppm state value
+(setq batt_saver (eeprom-read-i batt_saver_add)); load defaul battery saver config
 (esp_now_init)
 ; display thread
 (defun display_th(){
@@ -130,24 +130,12 @@
             })
         })
 
-      ;  (if (> main_prescaler 10)
-      ;      (setq main_prescaler 0)
-      ;     )
-
-        (if (= throttle_status 1) {
-            (setq val_1 1.0) ; set this value when throttle is enabled
-            (setq sleep_time data_rate)
-            (data_send)
-       }
-       {
-            (setq val_1 1.0) ;5 , 20 ,17
-            (setq sleep_time data_rate) ; change the sleep time to get less power consumption
-            (data_send)
-       })
-
-          (if (> main_prescaler 5)
+        (if (> main_prescaler 10)
             (setq main_prescaler 0)
-           )
+        )
+
+        (setq sleep_time data_rate)
+        (data_send)
 
     })
 })

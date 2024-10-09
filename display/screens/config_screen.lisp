@@ -2,7 +2,7 @@
 (def firts_iteration 0)
 (def enter_menu 0)
 (def thum_stick_prescaler 0)
-(define menu_count 4)
+(define menu_count 5)
 
 @const-start
 (defun config_screen(){
@@ -110,10 +110,27 @@
              (pairing_screen)
              })
           ))
+         ((eq menu_sub_index 5)
+         (progn
+            (if(= enter_menu 0){
+                (txt-block-c title_box 1 64 0  font_20x30 "B.SAVE")
+                (disp-render title_box (+ x_offset 0) (+ y_offset 15) '(0 0xFFFFFF))
+                (img-clear title_box)
+                (if (= cfg_pressed_short 1){
+                    (setq cfg_pressed_short 0)
+                    (setq cfg_pressed_long 0)
+                    (disp-clear)
+                    (setq enter_menu 1)
+                 })
+             }
+             {
+             (batt_save_screen)
+             })
+          ))
     )
 
     (setq thum_stick_prescaler (+ thum_stick_prescaler 1))
-    (if (and (> thum_stick_prescaler 5) (= enter_menu 0)){
+    (if (and (> thum_stick_prescaler 10) (= enter_menu 0)){
         (if(< (get-adc 0) 0.8){
             (setq menu_sub_index (+ menu_sub_index 1))
             (if (> menu_sub_index menu_count) {
