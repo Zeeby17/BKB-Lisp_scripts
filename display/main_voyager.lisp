@@ -43,7 +43,7 @@
 (import "res/esp_now.lisp" 'esp_now)
 (import "screens/pairing_screen.lisp" 'pairing_screen)
 (import "screens/batt_save_screen.lisp" 'battery_saver_screen)
-(import "screens/ppm_screen.lisp" 'ppm_screen)
+(import "screens/PPM_screen.lisp" 'ppm_screen)
 (read-eval-program disp-text)
 (read-eval-program speed_box)
 (read-eval-program display_init)
