@@ -125,11 +125,12 @@
     (if (< can-id 0) {
         (var can-devices (can-scan))
         ;(print can-devices)
+        ;(setq can-id (first (can-scan)))
         (setq can-id (first (can-scan)))
     })
-    (if (eq ppm_status 0) {
+
     (can-cmd can-id "(conf-set 'can-status-msgs-r1 0x3F )") ; set the CAN msg status that will be shown in the remote.
-    })
+
     (return can-id)
 })
 
@@ -183,13 +184,13 @@
 
 (defun data_to_send (data_send) {
 
-       (if (eq ppm_status 0) {
+
       (setq rpm     (canget-rpm can-id))
       (setq vin     (canget-vin can-id))
       (setq temp    (canget-temp-fet can-id))
       (setq speed   (canget-speed can-id))
       (setq I_motor (canget-current can-id))
-      })
+
 
       (bufset-f32 data_send 0 (+ rpm 0.01))
       (bufset-f32 data_send 4  vin)
@@ -293,7 +294,7 @@
 ; all motor info or esc info could be added in this thread
 (defun param-motor () {
     (loopwhile-thd 60 t {
-  (if (eq ppm_status 0) {
+
     (if (>= FW_VERSION 6.05) {
         (if (not-eq distance timeout) {
             (setq distance (rcode-run can-id 0.1 '(get-dist-abs)))
@@ -342,7 +343,7 @@
             )
          }
        )
-       })
+
      (sleep 1.0)
     }
    )
@@ -373,7 +374,7 @@
 
     (loopwhile-thd 50 t {
 
-     (if (eq ppm_status 0) {
+
      (if (and (= torq_mode 0.0) (= flag_l 0)) {
    ;  (rcode-run-noret can-id  '(conf-set 'l-current-max-scale 0.25)) ; 0.15
       (can-cmd can-id (str-from-n 0.25 "(conf-set 'l-current-max-scale %.2f)"))
@@ -398,7 +399,7 @@
      (setq flag_s 1) (setq flag_h 0)
       }
       )
-     })
+
    (sleep 1.0)
     }
    )
