@@ -119,101 +119,49 @@
                 (disp-render text_box (+ x_offset 90) (+ y_offset 49) '(0 0xFFFFFF))
                 (img-clear text_box)
 
-                (setq date_aux (eeprom-read-f data_index))
-                (print date_aux)
-            })
-            (if (eq ppm_menu_stat 0.0) {
                 (def text_box (img-buffer 'indexed2 115 14))
                 (txt-block-l text_box 1 0 0  font_9x14 "Data-Rate[ms]")
                 (disp-render text_box (+ x_offset 5) (+ y_offset 0) '(0 0xFFFFFF))
                 (img-clear text_box)
 
-                (if (and (> (get-adc-raw) 3000) (< date_aux 0.121)){
-                    (sleep 0.1)
-                    (setq date_aux (+ date_aux 0.001))
-                })
-                (if (and (< (get-adc-raw) 1000) (> date_aux 0.031)){
-                    (sleep 0.1)
-                    (setq date_aux (- date_aux 0.001))
-                })
+                (setq date_aux (eeprom-read-f data_index))
+                ;(print date_aux)
+            })
+
+            (if (and (> (get-adc-raw) 3000) (< date_aux 0.121)){
+                (sleep 0.1)
+                (setq date_aux (+ date_aux 0.001))
+            })
+            (if (and (< (get-adc-raw) 1000) (> date_aux 0.031)){
+                (sleep 0.1)
+                (setq date_aux (- date_aux 0.001))
+            })
 
             (def text_box (img-buffer 'indexed2 36 14))
             (txt-block-l text_box 1 10 0  font_9x14  (str-from-n (to-i (* date_aux 1000)) "%02d"))
             (disp-render text_box (+ x_offset 40) (+ y_offset 18) '(0 0xFFFFFF))
             (img-clear text_box)
-            })
-
-            (if (eq ppm_menu_stat 1.0) {
-                (setq ppm_menu_stat 1.0)
-
-                (def text_box (img-buffer 'indexed2 115 14))
-                (txt-block-l text_box 1 0 0  font_9x14 "PPM-MODE")
-                (disp-render text_box (+ x_offset 5) (+ y_offset 0) '(0 0xFFFFFF))
-                (img-clear text_box)
-
-                (if (eq (to-i ppm_status) 1) {
-                    (def text_box (img-buffer 'indexed2 115 14))
-                    (txt-block-l text_box 1 10 0  font_9x14  "ENABLE")
-                    (disp-render text_box (+ x_offset 10) (+ y_offset 18) '(0 0xFFFFFF))
-                }
-                {
-                    (def text_box (img-buffer 'indexed2 115 14))
-                    (txt-block-l text_box 1 10 0  font_9x14  "DISABLE")
-                    (disp-render text_box (+ x_offset 10) (+ y_offset 18) '(0 0xFFFFFF))
-                })
-
-                (if  (> (get-adc-raw) 3000){ ;3000
-                     (sleep 0.1)
-                     (def text_box (img-buffer 'indexed2 115 14))
-                     (txt-block-l text_box 1 10 0  font_9x14  "ENABLE")
-                     (disp-render text_box (+ x_offset 10) (+ y_offset 18) '(0 0xFFFFFF))
-                     (img-clear text_box)
-                     (setq ppm_status 1.0)
-                })
-                (if (< (get-adc-raw) 2000){ ; 1000, 0.031
-                    (sleep 0.1)
-                    (def text_box (img-buffer 'indexed2 115 14))
-                    (txt-block-l text_box 1 10 0  font_9x14  "DISABLE")
-                    (disp-render text_box (+ x_offset 10) (+ y_offset 18) '(0 0xFFFFFF))
-                    (img-clear text_box)
-                    (setq ppm_status 0.0)
-                })
-              })
-
-            (if (> (get-adc 1) 2.8) {
-             (setq ppm_menu_stat 1.0)
-            })
-
-            (if(< (get-adc 1) 0.2) {
-                (setq ppm_menu_stat 0.0)
-                (setq iteration_data 0.0)
-                (sleep 1)
-            })
         ))
     )
 
-(if (= iteration_data 0) {
-    (if (= cfg_pressed_short 1){
-        (setq cfg_pressed_short 0)
-        (setq info_screen_num (+ info_screen_num 3))
-        (if (> info_screen_num 3)
-            {
-            (setq info_screen_num 0)
-            (setq iteration_data 0)
-            (setq firts_iteration_info 0)
+    (if (= iteration_data 0) {
+        (if (= cfg_pressed_short 1){
+            (setq cfg_pressed_short 0)
+            (setq info_screen_num (+ info_screen_num 3))
+            (if (> info_screen_num 3){
+                (setq info_screen_num 0)
+                (setq iteration_data 0)
+                (setq firts_iteration_info 0)
+            })
         })
-    })}
+    }
     {
-     (if (= cfg_pressed_long 1){
+    (if (= cfg_pressed_long 1){
         (setq cfg_pressed_long 0)
         (setq cfg_pressed_short 0)
-        (eeprom-store-f 12 date_aux)
-        (setq data_rate (eeprom-read-f 12))
-        (if(eq ppm_menu_stat 1.0)
-        {
-          (eeprom-store-i 13 ppm_status)
-          (setq ppm_status (eeprom-read-i 13))
-        })
+        (eeprom-store-f data_index date_aux)
+        (setq data_rate (eeprom-read-f data_index))
+
         (disp-clear)
         (setq firts_iteration 0)
         (setq menu_sub_index 0)
@@ -221,9 +169,9 @@
         (setq firts_iteration_info 0)
         (setq iteration_data 0)
         (setq info_screen_num 0)
-        (setq ppm_menu_stat 0.0)
+
      })
- })
+    })
     (if (= on_pressed_short 1){
         (setq on_pressed_short 0)
         (disp-clear)
@@ -233,7 +181,7 @@
         (setq enter_menu 0)
         (setq firts_iteration_info 0)
         (setq info_screen_num 0)
-        (setq ppm_menu_stat 0.0)
+
      })
 })
 @const-end
