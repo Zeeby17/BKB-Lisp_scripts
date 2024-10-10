@@ -147,7 +147,7 @@
     (if (= iteration_data 0) {
         (if (= cfg_pressed_short 1){
             (setq cfg_pressed_short 0)
-            (setq info_screen_num (+ info_screen_num 3))
+            (setq info_screen_num (+ info_screen_num 1))
             (if (> info_screen_num 3){
                 (setq info_screen_num 0)
                 (setq iteration_data 0)
