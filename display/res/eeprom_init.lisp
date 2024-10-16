@@ -14,6 +14,74 @@
 (define ppm_status_add 13)
 (define batt_saver_add 14)
 
+(defun eeprom_check(){
+    (setq test_value (to-i (eeprom-read-i 1)))
+    (if(< test_value 1){
+        (print "eeprom 1 error, writing default")
+        (eeprom-store-i 1 20)
+    })
+    (setq test_value (to-i (eeprom-read-i 2)))
+    (if(or (< test_value 1)(> test_value 4096)){
+        (print "eeprom 2 error, writing default")
+        (eeprom-store-i 2 2048)
+    })
+    (setq test_value (to-i (eeprom-read-i 3)))
+    (if(or (< test_value 1)(> test_value 4096)){
+        (print "eeprom 3 error, writing default")
+        (eeprom-store-i 3 4076)
+    })
+    (setq test_value (to-i (eeprom-read-i 4)))
+    (if(or (< test_value 1)(> test_value 4)){
+        (print "eeprom 4 error, writing default")
+        (eeprom-store-i 4 1)
+    })
+    (setq test_value (to-i (eeprom-read-i 6)))
+    (if(or (< test_value 0)(> test_value 255)){
+        (print "eeprom 5 error, writing default")
+        (eeprom-store-i 6 0)
+    })
+    (setq test_value (to-i (eeprom-read-i 7)))
+    (if(or (< test_value 0)(> test_value 255)){
+        (print "eeprom 6 error, writing default")
+        (eeprom-store-i 7 0)
+    })
+    (setq test_value (to-i (eeprom-read-i 8)))
+    (if(or (< test_value 0)(> test_value 255)){
+        (print "eeprom 7 error, writing default")
+        (eeprom-store-i 8 0)
+    })
+    (setq test_value (to-i (eeprom-read-i 9)))
+    (if(or (< test_value 0)(> test_value 255)){
+        (print "eeprom 9 error, writing default")
+        (eeprom-store-i 9 0)
+    })
+    (setq test_value (to-i (eeprom-read-i 10)))
+    (if(or (< test_value 0)(> test_value 255)){
+        (print "eeprom 10 error, writing default")
+        (eeprom-store-i 10 0)
+    })
+    (setq test_value (to-i (eeprom-read-i 11)))
+    (if(or (< test_value 0)(> test_value 255)){
+        (print "eeprom 11 error, writing default")
+        (eeprom-store-i 11 0)
+    })
+    (setq test_value (to-float (eeprom-read-f 12)))
+    (if(or (< test_value 0.03)(> test_value 0.120)){
+        (print "eeprom 12 error, writing default")
+        (eeprom-store-f 12 0.06)
+    })
+    (setq test_value (to-i (eeprom-read-i 13)))
+    (if(or (< test_value 0)(> test_value 1)){
+        (print "eeprom 13 error, writing default")
+        (eeprom-store-i 13 0)
+    })
+    (setq test_value (to-i (eeprom-read-i 14)))
+    (if(or (< test_value 0)(> test_value 1)){
+        (print "eeprom 14 error, writing default")
+        (eeprom-store-i 14 0)
+    })
+})
+
 (defun eeprom_init(){
 
     (setq test_value (to-i (eeprom-read-i 32)))
@@ -33,7 +101,24 @@
             (eeprom-store-f 12 0.06); default data rate
             (eeprom-store-i 13 0) ; ppm status
             (eeprom-store-i 14 0)
+            (eeprom-store-i 15 0)
+            (eeprom-store-i 16 0)
+            (eeprom-store-i 17 0)
+            (eeprom-store-i 18 0)
+            (eeprom-store-i 19 0)
+            (eeprom-store-i 20 0)
+            (eeprom-store-i 21 0)
+            (eeprom-store-i 22 0)
+            (eeprom-store-i 23 0)
+            (eeprom-store-i 24 0)
+            (eeprom-store-i 25 0)
+            (eeprom-store-i 26 0)
+            (eeprom-store-i 27 0)
+            (eeprom-store-i 29 0)
+            (eeprom-store-i 30 0)
+            (eeprom-store-i 31 0)
             (eeprom-store-i 32 0xFFFF)
 
     })
+    (eeprom_check)
 )}

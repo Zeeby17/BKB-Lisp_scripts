@@ -1,5 +1,5 @@
 ; includes
-(define lisp_V 1.0)
+(define lisp_V 1.1)
 (define THR_TIMEOUT 2.5) ; 5 for 160Mhz
 (def UNITS 0); 0--> imperial 1--> metric
 
@@ -90,10 +90,10 @@
 (setq peer (list mac_0 mac_1 mac_2 mac_3 mac_4 mac_5))
 (print "Peer mac" peer)
 (throttle_init)
-(setq torq_mode (eeprom-read-i torq_mode_add))
-(setq data_rate (eeprom-read-f 12)) ; load default data rate value
-(setq ppm_status (to-i(eeprom-read-i 13))); load default ppm state value
-(setq batt_saver (eeprom-read-i batt_saver_add)); load defaul battery saver config
+(setq torq_mode (to-i(eeprom-read-i torq_mode_add)))
+(setq data_rate (to-float(eeprom-read-f data_index))) ; load default data rate value
+(setq ppm_status (to-i(eeprom-read-i ppm_status_add))); load default ppm state value
+(setq batt_saver (to-i(eeprom-read-i batt_saver_add))); load defaul battery saver config
 (esp_now_init)
 ; display thread
 (defun display_th(){

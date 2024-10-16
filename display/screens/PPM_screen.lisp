@@ -55,7 +55,7 @@
        (setq cfg_pressed_long 0)
        (setq cfg_pressed_short 0)
        (eeprom-store-i ppm_status_add ppm_status)
-       (setq ppm_status (eeprom-read-i ppm_status_add))
+       (setq ppm_status (to-i (eeprom-read-i ppm_status_add)))
        (disp-clear)
        (setq firts_iteration 0)
        (setq menu_sub_index 0)

@@ -57,7 +57,7 @@
        (setq cfg_pressed_long 0)
        (setq cfg_pressed_short 0)
        (eeprom-store-i batt_saver_add batt_saver_en)
-       (setq batt_saver (eeprom-read-i batt_saver_add))
+       (setq batt_saver (to-i (eeprom-read-i batt_saver_add)))
        (disp-clear)
        (setq firts_iteration 0)
        (setq menu_sub_index 0)

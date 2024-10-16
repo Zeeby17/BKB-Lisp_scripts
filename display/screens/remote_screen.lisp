@@ -80,7 +80,7 @@
             (txt-block-l text_box 1 0 0  font_9x14 "total distance")
             (disp-render text_box (+ x_offset 1) (+ y_offset -1) '(0 0xFFFFFF))
             (img-clear text_box)
-            (setq distance_total (eeprom-read-f total_trip_add))
+            (setq distance_total (to-float (eeprom-read-f total_trip_add)))
             (setq distance_total (+ distance_total (/ distance 1000)))
             (if (= UNITS 1)
             { 
