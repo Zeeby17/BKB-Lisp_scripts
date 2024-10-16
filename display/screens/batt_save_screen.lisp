@@ -21,7 +21,7 @@
         (txt-block-l text_box 1 0 0  font_9x14 "SAVE")
         (disp-render text_box (+ x_offset 90) (+ y_offset 49) '(0 0xFFFFFF))
         (img-clear text_box)
-        (if(= (eeprom-read-i batt_saver_add) 0){
+        (if(= (to-i (eeprom-read-i batt_saver_add)) 0){
             (def text_box (img-buffer 'indexed2 127 14))
             (txt-block-c text_box 1 64 0  font_9x14  "DISABLE")
             (disp-render text_box (+ x_offset 0) (+ y_offset 18) '(0 0xFFFFFF))
@@ -36,7 +36,7 @@
         (setq firts_iteration_batt 1)
 
     })
-    (if  (> (get-adc-raw) 3500){
+    (if  (> (get-adc-raw) 3000){
         ;(sleep 0.1)
         (txt-block-c text_box 1 64 0  font_9x14  "ENABLE")
         (disp-render text_box (+ x_offset 0) (+ y_offset 18) '(0 0xFFFFFF))
@@ -44,7 +44,7 @@
         (setq batt_saver_en 1)
 
     })
-    (if (< (get-adc-raw) 500){
+    (if (< (get-adc-raw) 1000){
         ;(sleep 0.1)
         (txt-block-c text_box 1 64 0  font_9x14  "DISABLE")
         (disp-render text_box (+ x_offset 0) (+ y_offset 18) '(0 0xFFFFFF))
